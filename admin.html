@@ -398,5 +398,14 @@
         window.saveSettings = async () => { await setDoc(doc(db,"settings","global"), { fee: document.getElementById('setFee').value, surge: document.getElementById('setSurge').value }); alert("Settings Updated"); };
         window.view = (v) => { ['dash','live','history','riders','menu','settings'].forEach(x => { document.getElementById('view-'+x).classList.add('hidden'); document.getElementById('nav-'+x).classList.remove('active'); }); document.getElementById('view-'+v).classList.remove('hidden'); document.getElementById('nav-'+v).classList.add('active'); };
     </script>
+    <script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('service-worker.js')
+                .then(reg => console.log('SW Registered!', reg))
+                .catch(err => console.log('SW Failed', err));
+        });
+    }
+</script>
 </body>
 </html>

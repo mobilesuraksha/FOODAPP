@@ -327,5 +327,14 @@
             document.getElementById('view-'+v).classList.remove('hidden'); document.getElementById('btn-'+v).classList.add('text-white'); document.getElementById('btn-'+v).classList.remove('text-slate-500');
         }
     </script>
+    <script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('service-worker.js')
+                .then(reg => console.log('SW Registered!', reg))
+                .catch(err => console.log('SW Failed', err));
+        });
+    }
+</script>
 </body>
 </html>
