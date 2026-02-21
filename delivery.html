@@ -3,162 +3,226 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VIKA Rider | On Duty</title>
+    <title>VIKA Pilot | Delivery App</title>
+    
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        body { font-family: 'Outfit', sans-serif; background: #0f172a; color: white; padding-bottom: 90px; -webkit-tap-highlight-color: transparent; }
-        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); }
+        body { font-family: 'Outfit', sans-serif; background: #0f172a; color: white; padding-bottom: 80px; -webkit-tap-highlight-color: transparent; }
+        
+        /* Glassmorphism */
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); }
+        
+        /* Animations */
         .slide-up { animation: slideUp 0.4s ease-out forwards; }
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        /* Custom Toggle */
+        
+        .blink { animation: blinker 1s linear infinite; }
+        @keyframes blinker { 50% { opacity: 0.5; } }
+
+        /* Toggles */
         .toggle-checkbox:checked { right: 0; border-color: #22c55e; }
         .toggle-checkbox:checked + .toggle-label { background-color: #22c55e; }
         .toggle-checkbox { right: auto; left: 0; }
         .toggle-label { width: 3rem; height: 1.5rem; }
         .toggle-checkbox { width: 1.5rem; height: 1.5rem; }
-        .badge-new { background: linear-gradient(45deg, #f59e0b, #ea580c); animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-        .tab-btn.active { color: #f97316; }
+        
+        .active-tab { background: #ea580c; color: white; border: none; }
+        .inactive-tab { background: transparent; color: #94a3b8; border: 1px solid #334155; }
     </style>
 </head>
 <body class="select-none">
 
-    <audio id="bell" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
-    <audio id="readySound" src="https://assets.mixkit.co/active_storage/sfx/1862/1862-preview.mp3" preload="auto"></audio>
+    <audio id="alertSound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
 
-    <div id="pwaRider" class="hidden fixed top-0 left-0 w-full bg-blue-600 text-white p-3 z-[200] flex justify-between items-center shadow-lg">
-        <p class="text-xs font-black px-2">Install App for Live Alerts</p>
-        <button id="pwaBtnRider" class="bg-white text-blue-600 px-4 py-1.5 rounded-xl text-[10px] font-black mr-2">INSTALL</button>
+    <div id="pwaRider" class="hidden fixed top-0 left-0 w-full bg-blue-600 text-white p-3 z-[200] flex justify-between items-center shadow-lg slide-up">
+        <div class="flex items-center gap-2">
+            <i class="fas fa-motorcycle"></i>
+            <p class="text-xs font-black">Install Pilot App</p>
+        </div>
+        <button id="pwaBtnRider" class="bg-white text-blue-600 px-4 py-1.5 rounded-lg text-[10px] font-black">INSTALL</button>
     </div>
 
     <div id="login" class="fixed inset-0 bg-slate-950 z-[100] flex items-center justify-center p-6">
         <div class="text-center w-full max-w-sm">
-            <div class="w-24 h-24 bg-orange-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl rotate-12">
-                <i class="fas fa-motorcycle text-4xl text-white -rotate-12"></i>
+            <div class="w-24 h-24 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-[2rem] flex items-center justify-center mx-auto mb-8 shadow-2xl rotate-6 border border-white/10">
+                <i class="fas fa-helmet-safety text-4xl text-white -rotate-6"></i>
             </div>
-            <h2 class="text-3xl font-black mb-2 tracking-tighter uppercase">VIKA RIDER</h2>
-            <p class="text-xs text-slate-500 font-bold mb-8 uppercase tracking-widest">Delivery Partner Portal</p>
-            <input id="lPhone" type="number" placeholder="Registered Mobile" class="w-full bg-slate-900 p-4 rounded-2xl mb-4 text-white font-bold outline-none border border-slate-800 focus:border-orange-500 transition-all">
-            <input id="lPass" type="password" placeholder="Password" class="w-full bg-slate-900 p-4 rounded-2xl mb-6 text-white font-bold outline-none border border-slate-800 focus:border-orange-500 transition-all">
-            <button id="loginBtn" class="w-full bg-orange-600 text-white py-5 rounded-2xl font-black shadow-lg hover:scale-105 transition">START YOUR DUTY</button>
+            <h2 class="text-4xl font-black mb-2 tracking-tighter italic text-white">VIKA PILOT</h2>
+            <p class="text-xs text-slate-500 font-bold mb-8 uppercase tracking-[0.2em]">Delivery Partner Login</p>
+            
+            <div class="space-y-4">
+                <div class="relative">
+                    <i class="fas fa-phone absolute left-4 top-4 text-slate-500"></i>
+                    <input id="lPhone" type="tel" placeholder="Mobile Number" class="w-full bg-slate-900/50 border border-slate-800 p-4 pl-10 rounded-xl text-white font-bold outline-none focus:border-blue-500 transition-all">
+                </div>
+                <div class="relative">
+                    <i class="fas fa-lock absolute left-4 top-4 text-slate-500"></i>
+                    <input id="lPass" type="password" placeholder="Password" class="w-full bg-slate-900/50 border border-slate-800 p-4 pl-10 rounded-xl text-white font-bold outline-none focus:border-blue-500 transition-all">
+                </div>
+                <button id="loginBtn" class="w-full bg-blue-600 text-white py-4 rounded-xl font-black shadow-lg hover:bg-blue-700 transition uppercase tracking-wider">Start Engine</button>
+                
+                <div class="pt-4 border-t border-slate-800">
+                    <button onclick="document.getElementById('registerModal').classList.remove('hidden')" class="w-full bg-slate-800 text-slate-300 py-3 rounded-xl font-bold text-xs border border-slate-700 hover:bg-slate-700">JOIN THE FLEET (REGISTER)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="registerModal" class="fixed inset-0 bg-slate-950/95 z-[110] hidden flex items-center justify-center p-6 backdrop-blur-sm">
+        <div class="bg-slate-900 w-full max-w-sm rounded-[2rem] p-8 border border-slate-800 shadow-2xl slide-up">
+            <h3 class="text-2xl font-black text-white mb-6">Rider Registration</h3>
+            <div class="space-y-4">
+                <input id="regName" placeholder="Full Name" class="w-full bg-slate-800 p-4 rounded-xl border border-slate-700 text-white outline-none focus:border-blue-500 font-bold">
+                <input id="regPhone" type="tel" placeholder="Mobile Number" class="w-full bg-slate-800 p-4 rounded-xl border border-slate-700 text-white outline-none focus:border-blue-500 font-bold">
+                <input id="regPass" type="password" placeholder="Create Password" class="w-full bg-slate-800 p-4 rounded-xl border border-slate-700 text-white outline-none focus:border-blue-500 font-bold">
+                <select id="regVeh" class="w-full bg-slate-800 p-4 rounded-xl border border-slate-700 text-white outline-none focus:border-blue-500 font-bold">
+                    <option>Motorcycle</option>
+                    <option>Scooter</option>
+                    <option>Electric Bike</option>
+                </select>
+                <button id="submitRegBtn" class="w-full bg-green-600 text-white py-4 rounded-xl font-black mt-2 shadow-lg hover:bg-green-700">SUBMIT APPLICATION</button>
+                <button onclick="document.getElementById('registerModal').classList.add('hidden')" class="w-full text-center text-xs text-slate-400 py-2 font-bold hover:text-white">Cancel</button>
+            </div>
         </div>
     </div>
 
     <div id="mainApp" class="hidden">
-        <header class="fixed top-0 w-full bg-slate-900/90 backdrop-blur z-40 px-5 py-4 flex justify-between items-center border-b border-white/5 shadow-lg">
+        
+        <header class="fixed top-0 w-full bg-slate-900/90 backdrop-blur-md z-40 px-5 py-4 flex justify-between items-center border-b border-white/5 shadow-md">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-lg shadow-inner" id="riderAvatar">😎</div>
+                <div class="w-10 h-10 rounded-full bg-slate-800 border border-slate-600 flex items-center justify-center text-lg shadow-inner text-blue-500" id="riderAvatar"><i class="fas fa-user-astronaut"></i></div>
                 <div>
-                    <h1 class="font-black text-lg leading-none text-white" id="rName">Rider</h1>
+                    <h1 class="font-black text-lg leading-none text-white tracking-tight" id="rName">Pilot</h1>
                     <div class="flex items-center gap-1.5 mt-1" id="statusIndicator">
                         <span class="w-2 h-2 bg-red-500 rounded-full"></span>
                         <span class="text-[10px] font-bold text-red-500 uppercase tracking-wider">Offline</span>
                     </div>
                 </div>
             </div>
-            <div class="relative inline-block w-12 align-middle select-none transition duration-200 ease-in">
-                <input type="checkbox" name="toggle" id="dutyToggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300"/>
-                <label for="dutyToggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-slate-700 cursor-pointer transition-colors duration-300"></label>
+            <div class="relative inline-block w-14 align-middle select-none">
+                <input type="checkbox" name="toggle" id="dutyToggle" class="toggle-checkbox absolute block w-7 h-7 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300"/>
+                <label for="dutyToggle" class="toggle-label block overflow-hidden h-7 rounded-full bg-slate-800 cursor-pointer transition-colors duration-300 border border-slate-600"></label>
             </div>
         </header>
 
-        <div id="view-home" class="pt-24 px-4 pb-10 min-h-screen">
-            <div class="glass p-6 rounded-[2rem] mb-6 relative overflow-hidden shadow-2xl border-orange-500/20">
-                <div class="absolute -right-6 -top-6 w-32 h-32 bg-orange-500/20 rounded-full blur-2xl"></div>
-                <div class="flex justify-between items-end relative z-10">
-                    <div>
-                        <p class="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">Today's Earnings</p>
-                        <h2 class="text-4xl font-black text-white">₹<span id="todayEarn">0</span></h2>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-[10px] text-slate-400 font-black uppercase mb-1">Cash Collection</p>
-                        <div class="bg-slate-950 border border-slate-800 px-3 py-1 rounded-lg text-sm font-bold text-orange-400">₹<span id="cashHand">0</span></div>
-                    </div>
+        <div class="pt-24 px-4 pb-10 min-h-screen">
+            
+            <div class="grid grid-cols-2 gap-3 mb-6">
+                <div class="glass p-4 rounded-2xl relative overflow-hidden shadow-lg">
+                    <p class="text-[9px] text-slate-400 font-black uppercase tracking-widest mb-1">Today's Earnings</p>
+                    <h2 class="text-3xl font-black text-green-400">₹<span id="todayEarn">0</span></h2>
+                </div>
+
+                <div class="glass p-4 rounded-2xl relative overflow-hidden border-orange-500/30 shadow-lg">
+                    <p class="text-[9px] text-slate-400 font-black uppercase tracking-widest mb-1">Cash to Deposit</p>
+                    <h2 class="text-3xl font-black text-orange-500">₹<span id="cashHand">0</span></h2>
                 </div>
             </div>
 
-            <div class="flex gap-2 mb-6 bg-slate-900/50 p-1 rounded-2xl">
-                <button onclick="switchTasks('active')" id="tab-active" class="flex-1 py-3 rounded-xl text-[10px] font-black bg-orange-600 text-white shadow-lg transition uppercase tracking-wider">My Active Tasks</button>
-                <button onclick="switchTasks('new')" id="tab-new" class="flex-1 py-3 rounded-xl text-[10px] font-black text-slate-400 transition uppercase tracking-wider">New Available <span id="newCount" class="bg-red-500 text-white px-2 rounded-full ml-1 hidden">0</span></button>
+            <div class="flex gap-2 mb-6 overflow-x-auto pb-2">
+                <button onclick="switchTab('new')" id="tab-new" class="active-tab px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider flex-shrink-0 shadow-lg transition-all">
+                    New Orders <span id="newCount" class="bg-red-600 text-white px-1.5 py-0.5 rounded-full ml-1 hidden">0</span>
+                </button>
+                <button onclick="switchTab('active')" id="tab-active" class="inactive-tab px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider flex-shrink-0 shadow-lg transition-all">My Tasks</button>
+                <button onclick="switchTab('hist')" id="tab-hist" class="inactive-tab px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider flex-shrink-0 shadow-lg transition-all">History</button>
             </div>
 
-            <div id="taskList" class="space-y-4 pb-20"></div>
-        </div>
+            <div id="view-new" class="view-section space-y-4"></div>
+            <div id="view-active" class="view-section hidden space-y-4"></div>
+            <div id="view-hist" class="view-section hidden space-y-4"></div>
 
-        <div id="view-hist" class="hidden pt-24 px-4 pb-10 min-h-screen">
-            <h2 class="text-2xl font-black mb-6 text-white italic">Delivery History</h2>
-            <div id="histList" class="space-y-3"></div>
-        </div>
-
-        <div class="fixed bottom-0 w-full bg-slate-900/80 backdrop-blur-md border-t border-white/5 flex justify-around pb-8 pt-4 z-50 shadow-2xl">
-            <button onclick="nav('home')" id="btn-home" class="tab-btn active text-orange-500 flex flex-col items-center gap-1 transition-all">
-                <i class="fas fa-route text-xl"></i><span class="text-[10px] font-black uppercase">Tasks</span>
-            </button>
-            <button onclick="nav('hist')" id="btn-hist" class="tab-btn text-slate-500 flex flex-col items-center gap-1 transition-all">
-                <i class="fas fa-history text-xl"></i><span class="text-[10px] font-black uppercase">History</span>
-            </button>
-            <button onclick="location.reload()" class="text-red-400 flex flex-col items-center gap-1 transition-all">
-                <i class="fas fa-power-off text-xl"></i><span class="text-[10px] font-black uppercase">Logout</span>
-            </button>
         </div>
     </div>
 
-    <div id="orderModal" class="fixed inset-0 bg-black/95 z-[80] hidden flex items-end sm:items-center justify-center backdrop-blur-sm">
-        <div class="bg-slate-900 w-full max-w-md rounded-t-[2.5rem] p-6 slide-up border-t border-white/10 h-[80vh] overflow-y-auto">
+    <div id="orderModal" class="fixed inset-0 bg-black/90 z-[80] hidden flex items-end sm:items-center justify-center backdrop-blur-sm">
+        <div class="bg-slate-900 w-full max-w-md rounded-t-[2.5rem] p-6 slide-up border-t border-white/10 h-[85vh] overflow-y-auto">
             <div class="w-12 h-1.5 bg-slate-700 rounded-full mx-auto mb-8"></div>
             <div id="modalContent"></div>
-            <button onclick="document.getElementById('orderModal').classList.add('hidden')" class="w-full mt-6 bg-slate-800 py-4 rounded-2xl font-bold text-slate-400">CLOSE DETAILS</button>
+            <button onclick="document.getElementById('orderModal').classList.add('hidden')" class="w-full mt-6 bg-slate-800 py-4 rounded-2xl font-bold text-slate-400 text-xs tracking-widest uppercase hover:bg-slate-700 transition">Close Details</button>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, updateDoc, doc, onSnapshot, query, where, arrayUnion } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, updateDoc, doc, onSnapshot, query, where, arrayUnion, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyCwyzE9sdZZUU3dHUix23zEzFkGr2nNRyw", authDomain: "foodhub-8ae15.firebaseapp.com", projectId: "foodhub-8ae15", storageBucket: "foodhub-8ae15.firebasestorage.app", messagingSenderId: "274265160043", appId: "1:274265160043:web:81238fd424681e7f70342e" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         
-        let me = null, allShops = [], ordersList = [], isOnline = false, taskTab = 'active';
+        let me = null, allShops = [], ordersList = [], isOnline = false, audioAllowed = false;
 
-        // --- PWA Logic ---
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault(); deferredPrompt = e;
-            document.getElementById('pwaRider').classList.remove('hidden');
+        // --- 1. SETUP & AUDIO ---
+        document.body.addEventListener('click', () => {
+            if(!audioAllowed) {
+                document.getElementById('alertSound').play().then(() => {
+                    document.getElementById('alertSound').pause();
+                    document.getElementById('alertSound').currentTime = 0;
+                    audioAllowed = true;
+                }).catch(e => console.log("Audio waiting..."));
+            }
         });
-        document.getElementById('pwaBtnRider').onclick = () => { if(deferredPrompt) deferredPrompt.prompt(); };
 
-        // --- Login ---
+        // PWA
+        let deferredPrompt; window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; document.getElementById('pwaRider').classList.remove('hidden'); }); document.getElementById('pwaBtnRider').onclick = () => { if(deferredPrompt) deferredPrompt.prompt(); };
+
+        // --- 2. AUTHENTICATION ---
         document.getElementById('loginBtn').onclick = async () => {
             let p = document.getElementById('lPhone').value, pass = document.getElementById('lPass').value;
-            if(!p || !pass) return alert("Please fill credentials");
+            if(!p || !pass) return alert("Enter Mobile & Password");
+            
+            document.getElementById('loginBtn').innerText = 'STARTING ENGINE...';
+            
             const q = query(collection(db, "riders"), where("phone", "==", p), where("pass", "==", pass));
             const snap = await getDocs(q);
+            
             if(!snap.empty) {
                 me = { id: snap.docs[0].id, ...snap.docs[0].data() };
                 document.getElementById('login').classList.add('hidden');
                 document.getElementById('mainApp').classList.remove('hidden');
                 document.getElementById('rName').innerText = me.name.split(' ')[0];
+                
+                // Restore Online Status
                 if(me.isOnline) { isOnline = true; document.getElementById('dutyToggle').checked = true; setOnlineUI(); }
+                
                 initData();
-            } else alert("Invalid Rider Credentials");
+            } else {
+                alert("Account Not Found or Pending Approval");
+                document.getElementById('loginBtn').innerText = "Start Engine";
+            }
         };
 
-        // --- Duty Toggle ---
+        document.getElementById('submitRegBtn').onclick = async () => {
+            let n=document.getElementById('regName').value, p=document.getElementById('regPhone').value, ps=document.getElementById('regPass').value, v=document.getElementById('regVeh').value;
+            if(!n || !p || !ps) return alert("Fill all fields");
+            await addDoc(collection(db,"rider_requests"),{name:n, phone:p, pass:ps, vehicle:v, timestamp:Date.now()});
+            alert("Request Sent! Wait for Admin approval."); location.reload();
+        };
+
+        // --- 3. DUTY TOGGLE ---
         document.getElementById('dutyToggle').addEventListener('change', async (e) => {
             isOnline = e.target.checked;
             if(me) await updateDoc(doc(db, "riders", me.id), { isOnline: isOnline });
-            if(isOnline) setOnlineUI(); else setOfflineUI();
+            isOnline ? setOnlineUI() : setOfflineUI();
         });
 
-        function setOnlineUI() { document.getElementById('statusIndicator').innerHTML = `<span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span><span class="text-[10px] font-bold text-green-500 uppercase tracking-wider">Online & Duty</span>`; renderDashboard(); }
-        function setOfflineUI() { document.getElementById('statusIndicator').innerHTML = `<span class="w-2 h-2 bg-red-500 rounded-full"></span><span class="text-[10px] font-bold text-red-500 uppercase tracking-wider">Offline</span>`; renderDashboard(); }
+        function setOnlineUI() { 
+            document.getElementById('statusIndicator').innerHTML = `<span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span><span class="text-[10px] font-bold text-green-500 uppercase tracking-wider">Online</span>`; 
+            renderAllViews(); 
+        }
+        function setOfflineUI() { 
+            document.getElementById('statusIndicator').innerHTML = `<span class="w-2 h-2 bg-red-500 rounded-full"></span><span class="text-[10px] font-bold text-red-500 uppercase tracking-wider">Offline</span>`; 
+            renderAllViews(); 
+        }
 
+        // --- 4. DATA SYNC ---
         async function initData() {
             const sSnap = await getDocs(collection(db, "shops"));
             allShops = sSnap.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -167,178 +231,167 @@
             onSnapshot(q, (snap) => {
                 ordersList = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                 
+                // Check for new available orders
                 if(isOnline) {
-                    // Alert for New Open Orders
-                    const newAvailable = ordersList.filter(o => !o.riderPhone && (o.status === 'Preparing' || o.status === 'Ready for Pickup'));
-                    if(newAvailable.length > 0) {
-                        document.getElementById('bell').play().catch(()=>{});
-                        if(navigator.vibrate) navigator.vibrate([200, 100, 200]);
+                    let newOrders = ordersList.filter(o => !o.riderPhone && (o.status === 'Ready for Pickup'));
+                    let myActive = ordersList.filter(o => o.riderPhone === me.phone && o.status !== 'Delivered');
+                    
+                    if(newOrders.length > 0 && audioAllowed) {
+                        // Only play sound if we haven't seen this state recently
+                         document.getElementById('alertSound').play().catch(()=>{});
                     }
                     
-                    // Alert when MY active order becomes Ready
-                    const myReady = ordersList.filter(o => o.riderPhone === me.phone && o.status === 'Ready for Pickup');
-                    if(myReady.length > 0) {
-                        document.getElementById('readySound').play().catch(()=>{});
-                        if(navigator.vibrate) navigator.vibrate([500, 200, 500]);
-                    }
+                    document.getElementById('newCount').innerText = newOrders.length;
+                    document.getElementById('newCount').classList.toggle('hidden', newOrders.length === 0);
                 }
-
-                document.getElementById('newCount').innerText = ordersList.filter(o => !o.riderPhone && (o.status === 'Preparing' || o.status === 'Ready for Pickup')).length;
-                renderStats(ordersList);
-                renderDashboard(); 
-                renderHistory();
+                
+                calculateStats();
+                renderAllViews();
             });
         }
 
-        function renderStats(orders) {
-            let delivered = orders.filter(o => o.status === 'Delivered' && o.riderPhone === me.phone);
-            let earn = delivered.reduce((a,b)=>a+(parseInt(b.deliveryFee)||0), 0);
-            let cash = delivered.reduce((acc, o) => { return (o.paymentMethod === 'Cash' && !o.adminCollected) ? acc + (parseInt(o.total)||0) : acc; }, 0);
-            document.getElementById('todayEarn').innerText = earn;
+        function calculateStats() {
+            let todayStr = new Date().toLocaleDateString(); 
+            let myOrders = ordersList.filter(o => o.riderPhone === me.phone && o.status === 'Delivered');
+            
+            // Earned Today
+            let todayEarned = myOrders.filter(o => o.date === todayStr).reduce((acc, o) => acc + (parseInt(o.deliveryFee) || 40), 0);
+            document.getElementById('todayEarn').innerText = todayEarned;
+
+            // Cash in Hand (COD not yet paid to admin)
+            let cash = myOrders.filter(o => (o.paymentMethod === 'Cash' || o.paymentMethod === 'COD') && !o.adminCollected)
+                               .reduce((acc, o) => acc + (parseInt(o.total) || 0), 0);
             document.getElementById('cashHand').innerText = cash;
         }
 
-        window.switchTasks = (t) => {
-            taskTab = t;
-            document.getElementById('tab-active').className = t === 'active' ? 'flex-1 py-3 rounded-xl text-[10px] font-black bg-orange-600 text-white shadow-lg uppercase' : 'flex-1 py-3 rounded-xl text-[10px] font-black bg-slate-800 text-slate-400 uppercase';
-            document.getElementById('tab-new').className = t === 'new' ? 'flex-1 py-3 rounded-xl text-[10px] font-black bg-orange-600 text-white shadow-lg uppercase' : 'flex-1 py-3 rounded-xl text-[10px] font-black bg-slate-800 text-slate-400 uppercase';
-            renderDashboard();
-        }
-
-        function renderDashboard() {
-            if(!isOnline) { document.getElementById('taskList').innerHTML = `<div class="text-center py-20 opacity-30"><i class="fas fa-power-off text-5xl mb-4 text-orange-500"></i><p class="font-bold">GO ONLINE TO SEE ORDERS</p></div>`; return; }
-
-            let filtered = (taskTab === 'active') ? 
-                ordersList.filter(o => o.riderPhone === me.phone && !['Delivered','Cancelled'].includes(o.status)) :
-                ordersList.filter(o => !o.riderPhone && (o.status === 'Preparing' || o.status === 'Ready for Pickup'));
-
-            if(filtered.length === 0) { document.getElementById('taskList').innerHTML = `<div class="text-center py-20 opacity-30"><i class="fas fa-box-open text-5xl mb-4"></i><p class="font-bold">NO TASKS FOUND</p></div>`; return; }
-
-            document.getElementById('taskList').innerHTML = filtered.map(o => {
-                let shop = allShops.find(s => s.id == o.shopId) || { shopName: 'Store', location: '0,0' };
-                let isPaid = o.paymentMethod === 'UPI' && o.paymentVerified;
-                
-                // --- BUTTON LOGIC (FIXED) ---
-                let btn = '';
-                if(!o.riderPhone) {
-                    btn = `<button onclick="acceptOrder('${o.id}')" class="w-full bg-green-500 text-white py-4 rounded-2xl font-black mt-2 shadow-lg badge-new">ACCEPT THIS DELIVERY</button>`;
-                } else {
-                    // Logic fixed: Check 'Ready for Pickup' FIRST.
-                    if(o.status === 'Ready for Pickup') {
-                        btn = `<button onclick="upd('${o.id}','Out for Delivery')" class="w-full bg-orange-600 text-white py-4 rounded-2xl font-black shadow-lg animate-bounce border-b-4 border-orange-800 active:border-b-0 active:translate-y-1 transition-all">FOOD IS READY! START DELIVERY 🚀</button>`;
-                    }
-                    else if(['Preparing', 'Accepted', 'Approved', 'Pending'].includes(o.status)) {
-                        btn = `<div class="bg-blue-900/40 text-blue-200 p-4 rounded-2xl text-center text-[10px] font-bold mt-2 border border-blue-500/30 uppercase tracking-widest"><i class="fas fa-spinner fa-spin mr-2"></i> Shop is Preparing Food...</div>`;
-                    }
-                    else if(o.status === 'Out for Delivery') {
-                        btn = `<button onclick="upd('${o.id}','Arrived')" class="w-full bg-purple-600 text-white py-4 rounded-2xl font-black mt-2 shadow-lg">I HAVE ARRIVED</button>`;
-                    }
-                    else if(o.status === 'Arrived') {
-                        btn = `<button onclick="upd('${o.id}','Delivered')" class="w-full bg-green-500 text-white py-4 rounded-2xl font-black mt-2 shadow-lg">${isPaid ? 'COMPLETE DELIVERY' : 'COLLECT CASH & FINISH'}</button>`;
-                    }
-                }
-
-                return `
-                <div class="glass p-5 rounded-[2rem] relative slide-up border-white/5 shadow-xl">
-                    <div class="flex justify-between items-start mb-4">
-                         <span class="text-[9px] font-black bg-slate-800 px-3 py-1 rounded-full border border-white/10 text-orange-400 uppercase">${o.status}</span>
-                         <span class="text-[9px] font-black ${isPaid ? 'text-green-500' : 'text-yellow-500'} uppercase">● ${isPaid ? 'Paid Online' : 'Cash Order'}</span>
-                    </div>
-                    <div class="flex items-center gap-4 mb-4">
-                        <div class="w-12 h-12 bg-orange-600/10 rounded-2xl flex items-center justify-center text-xl border border-orange-500/20 text-orange-500">🏪</div>
-                        <div class="flex-1">
-                            <h3 class="font-black text-white text-base">${shop.shopName}</h3>
-                            <p class="text-[9px] text-slate-400 truncate uppercase">${shop.address || 'Click map for location'}</p>
-                        </div>
-                        <a href="https://www.google.com/maps/search/?api=1&query=${shop.location}" target="_blank" class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-slate-900 shadow-lg"><i class="fas fa-directions"></i></a>
-                    </div>
-                    <div class="flex items-center gap-4 mb-6">
-                        <div class="w-12 h-12 bg-blue-600/10 rounded-2xl flex items-center justify-center text-xl border border-blue-500/20 text-blue-500">📍</div>
-                        <div class="flex-1">
-                            <h3 class="font-black text-white text-base">${o.customer.name}</h3>
-                            <p class="text-[9px] text-slate-400 truncate uppercase">${o.customer.addr}</p>
-                        </div>
-                        <a href="tel:${o.customer.phone}" class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white shadow-lg"><i class="fas fa-phone-alt"></i></a>
-                    </div>
-                    <div class="flex gap-2">
-                        <button onclick="showDetails('${o.id}')" class="bg-slate-800 text-white px-5 py-4 rounded-2xl font-bold text-xs"><i class="fas fa-list-ul"></i></button>
-                        ${btn}
-                    </div>
-                </div>`;
-            }).join('');
-        }
-
-        // --- CORE ACTIONS ---
-        window.acceptOrder = async (oid) => {
-            if(!confirm("Accept this order delivery?")) return;
-            // FIX: DO NOT OVERWRITE STATUS. Let shop set 'Ready'.
-            await updateDoc(doc(db, "orders", oid), { 
-                riderPhone: me.phone, 
-                riderName: me.name,
-                timeline: arrayUnion({ status: 'Rider Assigned', msg: `Rider ${me.name} joined`, time: new Date().toLocaleTimeString() })
+        // --- 5. RENDER LOGIC ---
+        window.switchTab = (tab) => {
+            ['new','active','hist'].forEach(t => {
+                document.getElementById(`tab-${t}`).className = (t === tab) ? 'active-tab px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider flex-shrink-0 shadow-lg' : 'inactive-tab px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider flex-shrink-0';
+                document.getElementById(`view-${t}`).classList.add('hidden');
             });
-            taskTab = 'active';
-            renderDashboard();
+            document.getElementById(`view-${tab}`).classList.remove('hidden');
+        };
+
+        function renderAllViews() {
+            if(!isOnline) {
+                document.getElementById('view-new').innerHTML = `<div class="text-center py-20 opacity-30"><i class="fas fa-power-off text-5xl mb-4 text-red-500"></i><p class="font-bold">YOU ARE OFFLINE</p></div>`;
+                return;
+            }
+
+            // 1. New Orders (Ready for Pickup & Unassigned)
+            let newOrders = ordersList.filter(o => !o.riderPhone && o.status === 'Ready for Pickup');
+            document.getElementById('view-new').innerHTML = newOrders.length ? newOrders.map(o => renderCard(o, 'new')).join('') : emptyState('No new orders');
+
+            // 2. Active Tasks
+            let activeTasks = ordersList.filter(o => o.riderPhone === me.phone && !['Delivered', 'Cancelled'].includes(o.status));
+            document.getElementById('view-active').innerHTML = activeTasks.length ? activeTasks.map(o => renderCard(o, 'active')).join('') : emptyState('No active tasks');
+
+            // 3. History
+            let history = ordersList.filter(o => o.riderPhone === me.phone && ['Delivered', 'Cancelled'].includes(o.status)).slice(0, 10);
+            document.getElementById('view-hist').innerHTML = history.length ? history.map(o => renderCard(o, 'hist')).join('') : emptyState('No history');
+        }
+
+        function renderCard(o, type) {
+            let shop = allShops.find(s => s.id == o.shopId) || { shopName: 'Shop', location: '0,0' };
+            let actionBtn = '';
+            
+            // Map Links
+            let shopLink = `https://www.google.com/maps/dir/?api=1&destination=${shop.location}`;
+            let custLink = `https://www.google.com/maps/dir/?api=1&destination=${o.customer.lat},${o.customer.lng}`;
+
+            if(type === 'new') {
+                actionBtn = `<button onclick="acceptOrder('${o.id}')" class="w-full bg-blue-600 text-white py-3 rounded-xl font-black text-xs uppercase shadow-lg hover:bg-blue-700 transition">ACCEPT DELIVERY</button>`;
+            } else if (type === 'active') {
+                if(o.status === 'Ready for Pickup' || o.status === 'Rider Assigned') {
+                    actionBtn = `
+                    <div class="grid grid-cols-2 gap-2">
+                        <a href="${shopLink}" target="_blank" class="bg-slate-700 text-white py-3 rounded-xl font-bold text-xs text-center flex items-center justify-center gap-2"><i class="fas fa-location-arrow"></i> Shop</a>
+                        <button onclick="upd('${o.id}','Out for Delivery')" class="bg-orange-600 text-white py-3 rounded-xl font-black text-xs shadow-lg animate-bounce">PICKUP ORDER</button>
+                    </div>`;
+                } else if (o.status === 'Out for Delivery') {
+                    actionBtn = `
+                    <div class="grid grid-cols-2 gap-2">
+                         <a href="${custLink}" target="_blank" class="bg-slate-700 text-white py-3 rounded-xl font-bold text-xs text-center flex items-center justify-center gap-2"><i class="fas fa-location-arrow"></i> Customer</a>
+                         <button onclick="upd('${o.id}','Arrived')" class="bg-blue-600 text-white py-3 rounded-xl font-black text-xs shadow-lg">ARRIVED</button>
+                    </div>`;
+                } else if (o.status === 'Arrived') {
+                    let isCod = o.paymentMethod !== 'UPI';
+                    actionBtn = `<button onclick="upd('${o.id}','Delivered')" class="w-full bg-green-600 text-white py-4 rounded-xl font-black text-xs uppercase shadow-lg">${isCod ? 'COLLECT CASH & DELIVER' : 'MARK DELIVERED'}</button>`;
+                }
+            } else {
+                actionBtn = `<div class="text-right"><span class="text-xs font-bold text-slate-500">${new Date(o.timestamp).toLocaleTimeString()}</span><br><span class="text-[10px] font-bold ${o.status==='Delivered'?'text-green-500':'text-red-500'}">${o.status}</span></div>`;
+            }
+
+            return `
+            <div class="glass p-5 rounded-[2rem] slide-up mb-4 border-l-4 ${type==='new' ? 'border-blue-500' : (type==='active'?'border-orange-500':'border-slate-500')}">
+                <div class="flex justify-between items-start mb-3">
+                    <span class="bg-slate-800 px-3 py-1 rounded-full text-[9px] font-black uppercase text-slate-300 border border-white/10">#${o.id.substr(0,4)} • ${o.status}</span>
+                    <span class="font-black text-white text-lg">₹${o.total}</span>
+                </div>
+                <div class="mb-4 space-y-3">
+                    <div class="flex items-start gap-3">
+                        <div class="mt-1"><i class="fas fa-store text-orange-500 text-xs"></i></div>
+                        <div><h4 class="font-bold text-sm text-white leading-none">${shop.shopName}</h4><p class="text-[10px] text-slate-400">Pickup Location</p></div>
+                    </div>
+                    <div class="h-4 border-l border-dashed border-slate-600 ml-1.5 -my-2"></div>
+                    <div class="flex items-start gap-3">
+                         <div class="mt-1"><i class="fas fa-map-marker-alt text-blue-500 text-xs"></i></div>
+                        <div><h4 class="font-bold text-sm text-white leading-none">${o.customer.name}</h4><p class="text-[10px] text-slate-400 w-48 truncate">${o.customer.addr}</p></div>
+                    </div>
+                </div>
+                <div class="flex gap-2 items-center">
+                    <button onclick="showDetails('${o.id}')" class="bg-slate-800 w-10 h-10 rounded-xl text-slate-300 flex items-center justify-center hover:bg-slate-700 transition"><i class="fas fa-eye"></i></button>
+                    ${type!=='hist' ? `<a href="tel:${o.customer.phone}" class="bg-slate-800 w-10 h-10 rounded-xl text-green-400 flex items-center justify-center hover:bg-slate-700 transition"><i class="fas fa-phone"></i></a>` : ''}
+                    <div class="flex-1">${actionBtn}</div>
+                </div>
+            </div>`;
+        }
+
+        function emptyState(msg) { return `<div class="text-center py-10 opacity-40"><i class="fas fa-road text-4xl mb-3"></i><p class="font-bold text-xs uppercase">${msg}</p></div>`; }
+
+        // --- 6. ACTIONS ---
+        window.acceptOrder = async (oid) => {
+            if(!isOnline) return alert("Go Online first!");
+            await updateDoc(doc(db, "orders", oid), { 
+                riderPhone: me.phone, riderName: me.name, status: 'Rider Assigned',
+                timeline: arrayUnion({ status: 'Rider Assigned', time: new Date().toLocaleTimeString() }) 
+            });
+            switchTab('active');
         };
 
         window.upd = async (oid, status) => {
             let o = ordersList.find(x => x.id === oid);
-            if(status === 'Delivered' && o.paymentMethod === 'Cash') {
-                if(!confirm("Confirm CASH COLLECTION of ₹" + o.total + "?")) return;
+            if(status === 'Delivered' && o.paymentMethod !== 'UPI') {
+                if(!confirm(`⚠️ COLLECT CASH ₹${o.total}\nConfirm you received cash?`)) return;
             }
-            await updateDoc(doc(db, "orders", oid), { 
-                status: status, 
-                timeline: arrayUnion({ status: status, msg: 'Rider Status Update', time: new Date().toLocaleTimeString() }) 
-            });
+            await updateDoc(doc(db, "orders", oid), { status: status, timeline: arrayUnion({ status: status, time: new Date().toLocaleTimeString() }) });
         };
 
         window.showDetails = (oid) => {
             let o = ordersList.find(x => x.id === oid);
-            let isPaid = o.paymentMethod === 'UPI' && o.paymentVerified;
-            let html = `
-                <div class="text-center mb-8">
-                    <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Grand Total</p>
-                    <h1 class="text-5xl font-black text-white">₹${o.total}</h1>
-                    <span class="inline-block mt-4 px-4 py-1 rounded-full text-[10px] font-black ${isPaid ? 'bg-green-500/20 text-green-500' : 'bg-yellow-500/20 text-yellow-500'} uppercase">${isPaid ? 'Payment Confirmed' : 'Collect Cash At Door'}</span>
+            let itemsHtml = o.items.map(i => `<div class="flex justify-between py-2 border-b border-white/5"><span class="text-slate-300 text-xs">${i.qty} x ${i.name}</span><span class="font-bold text-white text-xs">₹${i.price*i.qty}</span></div>`).join('');
+            
+            document.getElementById('modalContent').innerHTML = `
+                <div class="text-center mb-6">
+                    <h2 class="text-4xl font-black text-white">₹${o.total}</h2>
+                    <span class="bg-slate-800 px-3 py-1 rounded-full text-[10px] font-bold uppercase ${o.paymentMethod==='UPI'?'text-green-400':'text-orange-400'} mt-2 inline-block">${o.paymentMethod}</span>
                 </div>
                 <div class="space-y-4">
-                    <div class="bg-slate-800/50 p-5 rounded-3xl border border-white/5">
-                        <h3 class="font-black text-slate-400 text-[10px] uppercase mb-4 border-b border-white/5 pb-2">Items To Collect</h3>
-                        <div class="space-y-3 text-sm">
-                            ${o.items.map(i => `<div class="flex justify-between font-bold"><span>${i.qty} x ${i.name}</span><span class="text-white">₹${i.price*i.qty}</span></div>`).join('')}
-                        </div>
+                    <div class="bg-slate-800/50 p-4 rounded-2xl border border-white/5">
+                        <p class="text-[9px] text-slate-500 font-bold uppercase mb-1">Customer Details</p>
+                        <p class="text-white font-bold">${o.customer.name}</p>
+                        <p class="text-slate-400 text-xs mt-1">${o.customer.addr}</p>
+                        <a href="tel:${o.customer.phone}" class="mt-3 block text-center bg-slate-700 py-2 rounded-lg text-xs font-bold text-white">Call Customer</a>
                     </div>
-                    <a href="https://www.google.com/maps/search/?api=1&query=${o.customer.lat},${o.customer.lng}" target="_blank" class="block text-center bg-blue-600 py-3 rounded-xl font-bold text-xs">NAVIGATE TO CUSTOMER</a>
-                </div>
-            `;
-            document.getElementById('modalContent').innerHTML = html;
+                    <div class="bg-slate-800/50 p-4 rounded-2xl border border-white/5">
+                        <p class="text-[9px] text-slate-500 font-bold uppercase mb-2">Order Items</p>
+                        ${itemsHtml}
+                    </div>
+                </div>`;
             document.getElementById('orderModal').classList.remove('hidden');
-        }
+        };
 
-        window.nav = (v) => {
-            ['home','hist'].forEach(x => {
-                document.getElementById('view-'+x).classList.add('hidden');
-                document.getElementById('btn-'+x).className = 'tab-btn text-slate-500 flex flex-col items-center gap-1 transition-all';
-            });
-            document.getElementById('view-'+v).classList.remove('hidden');
-            document.getElementById('btn-'+v).className = 'tab-btn active text-orange-500 flex flex-col items-center gap-1 transition-all';
-        }
-
-        function renderHistory() {
-            let hist = ordersList.filter(o => o.status === 'Delivered' && o.riderPhone === me.phone);
-            document.getElementById('histList').innerHTML = hist.map(o => `
-                <div class="glass p-5 rounded-2xl flex justify-between items-center opacity-70 border-white/5">
-                    <div>
-                        <p class="text-[9px] text-slate-500 font-bold uppercase">${o.date || 'Today'}</p>
-                        <h4 class="font-black text-sm text-white">#${o.id.substr(0,5)} • ${o.customer.name}</h4>
-                        <span class="text-[9px] font-black text-green-500 uppercase tracking-widest">Delivered ✓</span>
-                    </div>
-                    <div class="text-right">
-                        <p class="font-black text-white text-lg">₹${o.total}</p>
-                        <p class="text-[9px] text-orange-400 font-bold uppercase">Earned: ₹${o.deliveryFee || 0}</p>
-                    </div>
-                </div>`).join('') || '<p class="text-center text-slate-500 py-20 font-bold opacity-30">NO DELIVERY HISTORY</p>';
-        }
     </script>
 </body>
 </html>
