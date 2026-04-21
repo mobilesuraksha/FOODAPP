@@ -1,0 +1,16 @@
+{
+  "name": "VIKA Pilot Delivery",
+  "short_name": "VIKA Pilot",
+  "start_url": "/delivery.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#3b82f6",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3075/3075977.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
