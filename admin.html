@@ -283,10 +283,13 @@
                 <p class="text-[9px] font-black text-green-600 uppercase tracking-widest">Total Earnings</p>
                 <p class="text-2xl font-black text-green-700 mt-1" id="rdEarn">₹0</p>
             </div>
-            <div class="bg-orange-50 p-4 rounded-2xl border border-orange-100">
+            
+            <div class="bg-orange-50 p-4 rounded-2xl border border-orange-200 relative overflow-hidden">
                 <p class="text-[9px] font-black text-orange-600 uppercase tracking-widest">Cash In Hand (COD)</p>
                 <p class="text-xl font-black text-orange-700 mt-1" id="rdCod">₹0</p>
+                <button id="settleCodBtn" class="hidden absolute bottom-3 right-3 bg-orange-600 text-white px-3 py-1.5 rounded-lg text-[9px] font-black shadow hover:bg-orange-700 transition tap">SETTLE</button>
             </div>
+            
             <div class="bg-blue-50 p-4 rounded-2xl border border-blue-100">
                 <p class="text-[9px] font-black text-blue-600 uppercase tracking-widest">UPI Collected</p>
                 <p class="text-xl font-black text-blue-700 mt-1" id="rdUpi">₹0</p>
@@ -359,7 +362,7 @@ window.auth = async () => {
 
     try {
         let snap = await getDoc(doc(db, "settings", "security"));
-        if (pin === (snap.exists() ? snap.data().adminPin : "1234")) {
+        if (pin === (snap.exists() && snap.data().adminPin ? snap.data().adminPin : "1234")) {
             document.getElementById('login').classList.add('hidden');
             document.getElementById('mainPanel').classList.remove('hidden');
             initData();
@@ -629,7 +632,7 @@ window.saveRiderEdit = async () => {
     alert('✅ Rider details updated');
 };
 
-// Rider Dashboard
+// ================== RIDER DASHBOARD & COD SETTLE ==================
 window.openRiderDash = id => {
     let r = riders.find(x=>x.id===id);
     let rOrders = orders.filter(o => o.riderPhone === r.phone && o.status === 'Delivered');
@@ -639,15 +642,50 @@ window.openRiderDash = id => {
     document.getElementById('rdPhone').innerText = r.phone;
     
     document.getElementById('rdCount').innerText = rOrders.length;
-    // Earnings calculated as deliveryFee, defaulting to base fee if missing
+    
     let defaultFee = parseInt(globalSet.fee) || 20;
     document.getElementById('rdEarn').innerText = '₹' + rOrders.reduce((a,b) => a + (parseInt(b.deliveryFee) || defaultFee), 0);
     
-    // COD and UPI calculation
-    document.getElementById('rdCod').innerText = '₹' + rOrders.filter(o => o.paymentMethod !== 'UPI').reduce((a,b) => a + (parseInt(b.total) || 0), 0);
+    // COD Logic (Exclude settled orders)
+    let pendingCodOrders = rOrders.filter(o => o.paymentMethod !== 'UPI' && !o.codSettled);
+    let codAmount = pendingCodOrders.reduce((a,b) => a + (parseInt(b.total) || 0), 0);
+    
+    document.getElementById('rdCod').innerText = '₹' + codAmount;
+    
+    // Settle Button Logic
+    let settleBtn = document.getElementById('settleCodBtn');
+    if(codAmount > 0) {
+        settleBtn.classList.remove('hidden');
+        settleBtn.onclick = () => window.settleRiderCOD(r.phone, pendingCodOrders, codAmount);
+    } else {
+        settleBtn.classList.add('hidden');
+    }
+    
     document.getElementById('rdUpi').innerText = '₹' + rOrders.filter(o => o.paymentMethod === 'UPI').reduce((a,b) => a + (parseInt(b.total) || 0), 0);
     
     document.getElementById('riderDashModal').classList.remove('hidden');
+};
+
+window.settleRiderCOD = async (phone, codOrders, amount) => {
+    if(confirm(`Are you sure you want to Settle ₹${amount} cash collected by this rider?\n\nThis will reset their "Cash in Hand" to ₹0.`)) {
+        let btn = document.getElementById('settleCodBtn');
+        btn.innerHTML = "SETTLING...";
+        btn.disabled = true;
+        
+        try {
+            // Update all these orders to mark codSettled: true
+            let promises = codOrders.map(o => updateDoc(doc(db, "orders", o.id), { codSettled: true }));
+            await Promise.all(promises);
+            
+            alert(`✅ Successfully settled ₹${amount}`);
+            document.getElementById('riderDashModal').classList.add('hidden');
+        } catch(e) {
+            alert("Error settling COD. Please check internet connection.");
+        }
+        
+        btn.innerHTML = "SETTLE";
+        btn.disabled = false;
+    }
 };
 
 // UPI Approval Logic
