@@ -1,814 +1,1048 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIKA HQ | Super Admin</title>
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#ea580c">
-    <link rel="icon" id="dynamicFavicon" href="https://cdn-icons-png.flaticon.com/512/3075/3075977.png">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-        body{font-family:'Outfit',sans-serif;background:#f1f5f9;}
-        .sidebar{transition:transform 0.3s cubic-bezier(0.4,0,0.2,1),width 0.3s;}
-        .nav-link{transition:all 0.2s;border-radius:12px;}
-        .nav-link.active{background:linear-gradient(135deg,#ea580c,#ef4444);color:#fff;box-shadow:0 8px 20px rgba(234,88,12,0.3);}
-        .nav-link:hover:not(.active){background:#fff7ed;color:#ea580c;}
-        .stat-card{transition:transform 0.2s,box-shadow 0.2s;}
-        .stat-card:hover{transform:translateY(-4px);box-shadow:0 20px 40px rgba(0,0,0,0.08);}
-        .slide-up{animation:slideUp 0.4s ease-out forwards;}
-        @keyframes slideUp{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
-        .spinner{width:20px;height:20px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite;display:inline-block;}
-        @keyframes spin{to{transform:rotate(360deg)}}
-        .badge-pulse{animation:badgePulse 2s infinite;}
-        @keyframes badgePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
-        @media(max-width:768px){.sidebar{transform:translateX(-100%);position:fixed;z-index:50;height:100%;width:280px;}.sidebar.open{transform:translateX(0);}.main-content{margin-left:0;}}
-        @media(min-width:769px){.sidebar{transform:translateX(0);width:280px;position:fixed;height:100%;}.main-content{margin-left:280px;}}
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VIKA HQ | Super Admin</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#ea580c">
+<link rel="icon" id="faviconEl" href="https://cdn-icons-png.flaticon.com/512/3075/3075977.png">
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Outfit',sans-serif;background:#f1f5f9;overflow-x:hidden;}
+.sidebar{transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);}
+.nav-link{transition:all 0.2s;border-radius:12px;cursor:pointer;}
+.nav-link.active{background:linear-gradient(135deg,#ea580c,#ef4444);color:#fff;box-shadow:0 6px 18px rgba(234,88,12,0.35);}
+.nav-link:hover:not(.active){background:#fff7ed;color:#ea580c;}
+.stat-card{transition:transform 0.2s,box-shadow 0.2s;}
+.stat-card:hover{transform:translateY(-4px);box-shadow:0 20px 40px rgba(0,0,0,0.08);}
+.slide-up{animation:slideUp 0.4s ease-out forwards;}
+@keyframes slideUp{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite;display:inline-block;vertical-align:middle;}
+.badge{animation:badgePulse 2s infinite;}
+@keyframes badgePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%);position:fixed;z-index:50;height:100%;width:280px;}
+  .sidebar.open{transform:translateX(0);}
+  .main-content{margin-left:0;}
+}
+@media(min-width:769px){
+  .sidebar{transform:translateX(0);width:280px;position:fixed;height:100%;}
+  .main-content{margin-left:280px;}
+}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:#f1f5f9;}
+::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:4px;}
+.tab-pill.active{background:#ea580c;color:#fff;}
+.tab-pill{cursor:pointer;transition:all 0.2s;}
+input,select,textarea{transition:border-color 0.2s;}
+.modal-backdrop{background:rgba(15,23,42,0.85);backdrop-filter:blur(8px);}
+.green-upi{background:linear-gradient(135deg,#059669,#10b981);}
+.red-cod{background:linear-gradient(135deg,#dc2626,#ef4444);}
+</style>
 </head>
 <body class="text-slate-800">
-
 <audio id="alertSound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
 
-<div id="login" class="fixed inset-0 bg-gradient-to-br from-slate-900 to-slate-800 z-[100] flex items-center justify-center p-6">
-    <div class="bg-white w-full max-w-sm rounded-[2.5rem] p-8 text-center shadow-2xl slide-up relative overflow-hidden">
-        <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-orange-500 to-red-600"></div>
-        <div class="w-20 h-20 bg-gradient-to-br from-orange-500 to-red-600 rounded-[1.5rem] flex items-center justify-center mx-auto mb-6 shadow-xl">
-            <img id="loginLogo" src="https://cdn-icons-png.flaticon.com/512/3075/3075977.png" class="w-12 h-12 invert brightness-0" alt="HQ">
-        </div>
-        <h2 class="text-3xl font-black mb-1 text-slate-900 tracking-tighter">VIKA ADMIN</h2>
-        <p class="text-xs text-slate-400 mb-8 font-bold uppercase tracking-widest">Master Control Panel</p>
-        <div class="space-y-4">
-            <input type="password" id="pin" placeholder="Enter Admin PIN" class="w-full bg-slate-50 border-2 border-slate-100 p-4 rounded-xl text-center font-black text-xl outline-none focus:border-orange-500 transition" onkeydown="if(event.key==='Enter')auth()">
-            <button onclick="auth()" id="loginBtn" class="w-full bg-gradient-to-r from-orange-500 to-red-600 text-white py-4 rounded-xl font-black shadow-xl hover:opacity-90 transition">UNLOCK SYSTEM</button>
-        </div>
+<!-- ===================== LOGIN ===================== -->
+<div id="login" class="fixed inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 z-[200] flex items-center justify-center p-6">
+  <div class="bg-white w-full max-w-sm rounded-[2.5rem] p-8 text-center shadow-2xl slide-up relative overflow-hidden">
+    <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-orange-500 to-red-600"></div>
+    <div class="w-20 h-20 bg-gradient-to-br from-orange-500 to-red-600 rounded-[1.5rem] flex items-center justify-center mx-auto mb-5 shadow-xl" id="loginLogoBox">
+      <span class="text-white font-black text-3xl" id="loginLogoTxt">HQ</span>
     </div>
+    <h2 class="text-3xl font-black mb-1 text-slate-900 tracking-tighter" id="loginAppTitle">VIKA ADMIN</h2>
+    <p class="text-xs text-slate-400 mb-7 font-bold uppercase tracking-widest">Master Control Panel</p>
+    <input type="password" id="pin" placeholder="Enter Admin PIN" class="w-full bg-slate-50 border-2 border-slate-100 p-4 rounded-xl text-center font-black text-xl outline-none focus:border-orange-500 mb-4" onkeydown="if(event.key==='Enter')auth()">
+    <button onclick="auth()" id="loginBtn" class="w-full bg-gradient-to-r from-orange-500 to-red-600 text-white py-4 rounded-xl font-black shadow-xl hover:opacity-90 transition">UNLOCK SYSTEM</button>
+    <p class="mt-3 text-[10px] text-slate-400">Default PIN: 1234</p>
+  </div>
 </div>
 
+<!-- ===================== SIDEBAR ===================== -->
 <aside id="sidebarPanel" class="sidebar bg-white border-r border-slate-100 flex flex-col justify-between p-5 z-50 shadow-xl overflow-y-auto">
-    <div>
-        <div class="flex items-center gap-3 mb-8 px-2">
-            <img id="sideLogo" src="https://cdn-icons-png.flaticon.com/512/3075/3075977.png" class="w-10 h-10 object-contain rounded-lg">
-            <div>
-                <h1 class="text-lg font-black tracking-tighter leading-none" id="hqTitle">VIKA HQ</h1>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Super Admin</p>
-            </div>
-        </div>
-        <nav class="space-y-1">
-            <button onclick="view('dash')" id="nav-dash" class="nav-link active w-full text-left px-4 py-3 font-bold text-sm flex items-center gap-3"><i class="fas fa-chart-pie w-5 text-center"></i> Overview</button>
-            <button onclick="view('req')" id="nav-req" class="nav-link w-full text-left px-4 py-3 font-bold text-sm flex items-center gap-3 justify-between">
-                <div class="flex items-center gap-3"><i class="fas fa-user-check w-5 text-center"></i> Approvals</div>
-                <span id="reqBadge" class="bg-red-500 text-white text-[9px] px-2 py-0.5 rounded-full hidden badge-pulse font-black">0</span>
-            </button>
-            <button onclick="view('shops')" id="nav-shops" class="nav-link w-full text-left px-4 py-3 font-bold text-sm flex items-center gap-3"><i class="fas fa-store w-5 text-center"></i> Shops</button>
-            <button onclick="view('riders')" id="nav-riders" class="nav-link w-full text-left px-4 py-3 font-bold text-sm flex items-center gap-3"><i class="fas fa-motorcycle w-5 text-center"></i> Riders</button>
-            <button onclick="view('ord')" id="nav-ord" class="nav-link w-full text-left px-4 py-3 font-bold text-sm flex items-center gap-3 justify-between">
-                <div class="flex items-center gap-3"><i class="fas fa-receipt w-5 text-center"></i> Live Orders</div>
-                <span id="pendingBadge" class="bg-amber-500 text-white text-[9px] px-2 py-0.5 rounded-full hidden font-black">0</span>
-            </button>
-            <button onclick="view('set')" id="nav-set" class="nav-link w-full text-left px-4 py-3 font-bold text-sm flex items-center gap-3"><i class="fas fa-gear w-5 text-center"></i> Settings</button>
-        </nav>
+  <div>
+    <div class="flex items-center gap-3 mb-8 px-2">
+      <div class="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg overflow-hidden" id="sideLogoBox">
+        <span class="text-white font-black italic text-lg" id="sideLogoTxt">V</span>
+      </div>
+      <div>
+        <h1 class="text-lg font-black tracking-tighter leading-none" id="sideAppName">VIKA HQ</h1>
+        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Super Admin</p>
+      </div>
     </div>
-    <div class="mt-8 space-y-2">
-        <button onclick="if(confirm('Log out?'))location.reload()" class="w-full bg-slate-100 text-slate-500 py-2.5 rounded-xl font-bold text-xs hover:bg-red-50 hover:text-red-500 transition flex items-center justify-center gap-2"><i class="fas fa-right-from-bracket"></i> LOGOUT</button>
-    </div>
+    <nav class="space-y-1">
+      <button onclick="view('dash')" id="nav-dash" class="nav-link active w-full text-left px-4 py-3 font-bold text-sm flex items-center gap-3"><i class="fas fa-chart-pie w-5 text-center"></i>Overview</button>
+      <button onclick="view('req')" id="nav-req" class="nav-link w-full text-left px-4 py-3 font-bold text-sm flex items-center justify-between gap-3">
+        <span class="flex items-center gap-3"><i class="fas fa-user-check w-5 text-center"></i>Approvals</span>
+        <span id="reqBadge" class="bg-red-500 text-white text-[9px] px-2 py-0.5 rounded-full hidden badge font-black">0</span>
+      </button>
+      <button onclick="view('shops')" id="nav-shops" class="nav-link w-full text-left px-4 py-3 font-bold text-sm flex items-center gap-3"><i class="fas fa-store w-5 text-center"></i>Manage Shops</button>
+      <button onclick="view('riders')" id="nav-riders" class="nav-link w-full text-left px-4 py-3 font-bold text-sm flex items-center gap-3"><i class="fas fa-motorcycle w-5 text-center"></i>Manage Riders</button>
+      <button onclick="view('ord')" id="nav-ord" class="nav-link w-full text-left px-4 py-3 font-bold text-sm flex items-center justify-between">
+        <span class="flex items-center gap-3"><i class="fas fa-receipt w-5 text-center"></i>Live Orders</span>
+        <span id="pendingBadge" class="bg-amber-500 text-white text-[9px] px-2 py-0.5 rounded-full hidden font-black">0</span>
+      </button>
+      <button onclick="view('upi')" id="nav-upi" class="nav-link w-full text-left px-4 py-3 font-bold text-sm flex items-center justify-between">
+        <span class="flex items-center gap-3"><i class="fas fa-qrcode w-5 text-center"></i>UPI Verify</span>
+        <span id="upiPendBadge" class="bg-blue-500 text-white text-[9px] px-2 py-0.5 rounded-full hidden badge font-black">0</span>
+      </button>
+      <button onclick="view('commission')" id="nav-commission" class="nav-link w-full text-left px-4 py-3 font-bold text-sm flex items-center gap-3"><i class="fas fa-percent w-5 text-center"></i>Commission</button>
+      <button onclick="view('delivery')" id="nav-delivery" class="nav-link w-full text-left px-4 py-3 font-bold text-sm flex items-center gap-3"><i class="fas fa-route w-5 text-center"></i>Delivery Pricing</button>
+      <button onclick="view('set')" id="nav-set" class="nav-link w-full text-left px-4 py-3 font-bold text-sm flex items-center gap-3"><i class="fas fa-gear w-5 text-center"></i>Settings</button>
+    </nav>
+  </div>
+  <div class="space-y-2 mt-4">
+    <button onclick="clearAllData()" class="w-full bg-red-50 text-red-500 py-2.5 rounded-xl font-bold text-xs border border-red-100 hover:bg-red-500 hover:text-white transition flex items-center justify-center gap-2">
+      <i class="fas fa-trash-can"></i> CLEAR ALL DATA
+    </button>
+    <button onclick="exportCSV()" class="w-full bg-green-50 text-green-600 py-2.5 rounded-xl font-bold text-xs border border-green-100 hover:bg-green-600 hover:text-white transition flex items-center justify-center gap-2">
+      <i class="fas fa-file-csv"></i> EXPORT CSV
+    </button>
+    <button onclick="if(confirm('Log out?'))location.reload()" class="w-full bg-slate-100 text-slate-500 py-2.5 rounded-xl font-bold text-xs hover:bg-slate-200 transition flex items-center justify-center gap-2">
+      <i class="fas fa-right-from-bracket"></i> LOGOUT
+    </button>
+  </div>
 </aside>
 
+<!-- ===================== MAIN ===================== -->
 <main id="mainPanel" class="main-content min-h-screen p-5 hidden">
-    <div class="md:hidden flex justify-between items-center mb-5 bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-        <h1 class="text-lg font-black">HQ Console</h1>
-        <button onclick="document.getElementById('sidebarPanel').classList.toggle('open')" class="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-600"><i class="fas fa-bars"></i></button>
-    </div>
 
-    <div id="view-dash" class="slide-up">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-            <h2 class="text-2xl font-black text-slate-800">System Overview</h2>
-            <button onclick="exportCSV()" class="bg-green-600 text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow flex items-center gap-2"><i class="fas fa-file-csv"></i> EXPORT CSV</button>
-        </div>
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <div class="stat-card bg-white p-5 rounded-[1.5rem] shadow-sm border border-slate-100">
-                <p class="text-[10px] text-slate-400 font-black uppercase tracking-widest">Total Orders</p>
-                <h3 class="text-3xl font-black text-slate-800 mt-1" id="dashOrd">0</h3>
-            </div>
-            <div class="stat-card bg-white p-5 rounded-[1.5rem] shadow-sm border border-slate-100">
-                <p class="text-[10px] text-slate-400 font-black uppercase tracking-widest">Active Shops</p>
-                <h3 class="text-3xl font-black text-orange-500 mt-1" id="dashShops">0</h3>
-            </div>
-            <div class="stat-card bg-white p-5 rounded-[1.5rem] shadow-sm border border-slate-100">
-                <p class="text-[10px] text-slate-400 font-black uppercase tracking-widest">Rider Fleet</p>
-                <h3 class="text-3xl font-black text-indigo-500 mt-1" id="dashRiders">0</h3>
-            </div>
-            <div class="stat-card bg-white p-5 rounded-[1.5rem] shadow-sm border border-slate-100">
-                <p class="text-[10px] text-slate-400 font-black uppercase tracking-widest">Gross Revenue</p>
-                <h3 class="text-3xl font-black text-green-500 mt-1" id="totalRevenue">₹0</h3>
-            </div>
-        </div>
-        <div class="grid lg:grid-cols-2 gap-5">
-            <div class="bg-white p-6 rounded-[1.5rem] shadow-sm border border-slate-100">
-                <h3 class="font-black text-base mb-4"><i class="fas fa-history text-slate-400 mr-2"></i> Recent Orders</h3>
-                <div id="recentActivity" class="space-y-3"></div>
-            </div>
-            <div class="bg-white p-6 rounded-[1.5rem] shadow-sm border border-slate-100">
-                <h3 class="font-black text-base mb-4"><i class="fas fa-chart-line text-slate-400 mr-2"></i> Today's Stats</h3>
-                <div class="space-y-3" id="revenueStats"></div>
-            </div>
-        </div>
-    </div>
+  <!-- Mobile header -->
+  <div class="md:hidden flex justify-between items-center mb-5 bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+    <h1 class="text-lg font-black" id="mobileTitle">Dashboard</h1>
+    <button onclick="document.getElementById('sidebarPanel').classList.toggle('open')" class="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-600">
+      <i class="fas fa-bars"></i>
+    </button>
+  </div>
 
-    <div id="view-req" class="hidden slide-up">
-        <h2 class="text-2xl font-black text-slate-800 mb-6">Pending Approvals</h2>
-        <div class="grid lg:grid-cols-2 gap-6">
+  <!-- ========== OVERVIEW ========== -->
+  <div id="view-dash" class="slide-up">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-3">
+      <div><h2 class="text-2xl font-black text-slate-800">System Overview</h2><p class="text-sm text-slate-400 font-semibold">Real-time stats</p></div>
+      <div class="flex gap-2">
+        <select id="dashFilter" onchange="renderDash()" class="bg-white border border-slate-200 px-3 py-2 rounded-xl text-xs font-bold outline-none">
+          <option value="today">Today</option><option value="week">This Week</option><option value="month">This Month</option><option value="all">All Time</option>
+        </select>
+        <button onclick="exportCSV()" class="bg-green-600 text-white px-4 py-2 rounded-xl text-xs font-bold shadow hover:bg-green-700 transition flex items-center gap-2"><i class="fas fa-file-csv"></i> CSV</button>
+      </div>
+    </div>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div class="stat-card bg-white p-5 rounded-[1.5rem] shadow-sm border border-slate-100"><div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center mb-3"><i class="fas fa-receipt text-blue-500"></i></div><p class="text-[10px] text-slate-400 font-black uppercase tracking-widest">Total Orders</p><h3 class="text-3xl font-black text-slate-800 mt-1" id="dashOrd">0</h3></div>
+      <div class="stat-card bg-white p-5 rounded-[1.5rem] shadow-sm border border-slate-100"><div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center mb-3"><i class="fas fa-indian-rupee-sign text-green-500"></i></div><p class="text-[10px] text-slate-400 font-black uppercase tracking-widest">Revenue</p><h3 class="text-3xl font-black text-green-500 mt-1" id="dashRev">₹0</h3></div>
+      <div class="stat-card bg-white p-5 rounded-[1.5rem] shadow-sm border border-slate-100"><div class="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center mb-3"><i class="fas fa-store text-orange-500"></i></div><p class="text-[10px] text-slate-400 font-black uppercase tracking-widest">Active Shops</p><h3 class="text-3xl font-black text-orange-500 mt-1" id="dashShops">0</h3></div>
+      <div class="stat-card bg-white p-5 rounded-[1.5rem] shadow-sm border border-slate-100"><div class="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center mb-3"><i class="fas fa-motorcycle text-indigo-500"></i></div><p class="text-[10px] text-slate-400 font-black uppercase tracking-widest">Riders Online</p><h3 class="text-3xl font-black text-indigo-500 mt-1" id="dashOnlineRiders">0</h3></div>
+    </div>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div class="bg-green-50 p-4 rounded-2xl border border-green-100"><p class="text-[10px] text-green-600 font-black uppercase">UPI Payments</p><h3 class="text-2xl font-black text-green-700 mt-1">₹<span id="dashUpi">0</span></h3></div>
+      <div class="bg-orange-50 p-4 rounded-2xl border border-orange-100"><p class="text-[10px] text-orange-600 font-black uppercase">Cash Payments</p><h3 class="text-2xl font-black text-orange-700 mt-1">₹<span id="dashCod">0</span></h3></div>
+      <div class="bg-purple-50 p-4 rounded-2xl border border-purple-100"><p class="text-[10px] text-purple-600 font-black uppercase">Commission Earned</p><h3 class="text-2xl font-black text-purple-700 mt-1">₹<span id="dashComm">0</span></h3></div>
+      <div class="bg-red-50 p-4 rounded-2xl border border-red-100"><p class="text-[10px] text-red-600 font-black uppercase">Pending Orders</p><h3 class="text-2xl font-black text-red-700 mt-1"><span id="dashPend">0</span></h3></div>
+    </div>
+    <div class="grid lg:grid-cols-2 gap-5">
+      <div class="bg-white p-6 rounded-[1.5rem] shadow-sm border border-slate-100">
+        <h3 class="font-black text-base mb-4 flex items-center gap-2"><i class="fas fa-clock-rotate-left text-slate-400"></i> Recent Orders</h3>
+        <div id="recentActivity" class="space-y-3 text-sm"></div>
+      </div>
+      <div class="bg-white p-6 rounded-[1.5rem] shadow-sm border border-slate-100">
+        <h3 class="font-black text-base mb-4 flex items-center gap-2"><i class="fas fa-trophy text-slate-400"></i> Top Shops by Revenue</h3>
+        <div id="topShops" class="space-y-3"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== APPROVALS ========== -->
+  <div id="view-req" class="hidden slide-up">
+    <h2 class="text-2xl font-black text-slate-800 mb-6">Pending Approvals</h2>
+    <div class="grid lg:grid-cols-2 gap-6">
+      <div><h3 class="font-black text-sm mb-4 bg-blue-50 text-blue-600 px-4 py-2 rounded-xl inline-flex items-center gap-2"><i class="fas fa-store"></i> Shop Requests</h3><div id="shopReqList" class="space-y-3"></div></div>
+      <div><h3 class="font-black text-sm mb-4 bg-orange-50 text-orange-600 px-4 py-2 rounded-xl inline-flex items-center gap-2"><i class="fas fa-motorcycle"></i> Rider Requests</h3><div id="riderReqList" class="space-y-3"></div></div>
+    </div>
+  </div>
+
+  <!-- ========== SHOPS ========== -->
+  <div id="view-shops" class="hidden slide-up">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+      <h2 class="text-2xl font-black text-slate-800">Shop Accounts</h2>
+      <button onclick="openModal('addShopModal')" class="bg-slate-900 text-white px-5 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 shadow hover:bg-black transition"><i class="fas fa-plus"></i> Add Shop</button>
+    </div>
+    <div class="relative mb-5">
+      <i class="fas fa-search absolute left-4 top-3.5 text-slate-400 text-sm"></i>
+      <input id="shopSearch" placeholder="Search shops by name or phone..." class="w-full bg-white border-2 border-slate-100 p-3 pl-10 rounded-xl font-bold outline-none focus:border-orange-500" oninput="renderShops()">
+    </div>
+    <div id="shopList" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+  </div>
+
+  <!-- ========== RIDERS ========== -->
+  <div id="view-riders" class="hidden slide-up">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+      <h2 class="text-2xl font-black text-slate-800">Fleet Management</h2>
+      <button onclick="openModal('addRiderModal')" class="bg-slate-900 text-white px-5 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 shadow hover:bg-black transition"><i class="fas fa-plus"></i> Add Rider</button>
+    </div>
+    <div class="relative mb-5">
+      <i class="fas fa-search absolute left-4 top-3.5 text-slate-400 text-sm"></i>
+      <input id="riderSearch" placeholder="Search riders..." class="w-full bg-white border-2 border-slate-100 p-3 pl-10 rounded-xl font-bold outline-none focus:border-orange-500" oninput="renderRiders()">
+    </div>
+    <div id="riderList" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+  </div>
+
+  <!-- ========== LIVE ORDERS ========== -->
+  <div id="view-ord" class="hidden slide-up">
+    <h2 class="text-2xl font-black text-slate-800 mb-5">Live Order Control</h2>
+    <div class="flex gap-2 mb-4 overflow-x-auto pb-2">
+      <button onclick="filterOrd('All')" class="tab-pill active bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap">All</button>
+      <button onclick="filterOrd('Pending')" class="tab-pill bg-white border border-slate-200 text-slate-600 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap">Pending</button>
+      <button onclick="filterOrd('Preparing')" class="tab-pill bg-white border border-slate-200 text-slate-600 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap">Preparing</button>
+      <button onclick="filterOrd('Rider Assigned')" class="tab-pill bg-white border border-slate-200 text-slate-600 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap">Assigned</button>
+      <button onclick="filterOrd('Out for Delivery')" class="tab-pill bg-white border border-slate-200 text-slate-600 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap">On Way</button>
+      <button onclick="filterOrd('Delivered')" class="tab-pill bg-white border border-slate-200 text-slate-600 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap">Delivered</button>
+      <button onclick="filterOrd('Cancelled')" class="tab-pill bg-white border border-slate-200 text-slate-600 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap">Cancelled</button>
+    </div>
+    <div class="relative mb-4">
+      <i class="fas fa-search absolute left-4 top-3.5 text-slate-400 text-sm"></i>
+      <input id="ordSearch" placeholder="Search by name, phone, order ID..." class="w-full bg-white border-2 border-slate-100 p-3 pl-10 rounded-xl font-bold outline-none focus:border-orange-500" oninput="renderOrdersFiltered()">
+    </div>
+    <div id="ordList" class="space-y-3"></div>
+  </div>
+
+  <!-- ========== UPI VERIFY ========== -->
+  <div id="view-upi" class="hidden slide-up">
+    <h2 class="text-2xl font-black text-slate-800 mb-2">UPI Payment Verification</h2>
+    <p class="text-sm text-slate-400 mb-6">Verify UPI payments. Approve = rider told not to collect cash. Reject = rider must collect cash.</p>
+    <div class="grid lg:grid-cols-2 gap-4">
+      <div>
+        <h3 class="font-black text-sm mb-3 text-orange-600 bg-orange-50 px-4 py-2 rounded-xl inline-flex items-center gap-2"><i class="fas fa-clock"></i> Pending Verification</h3>
+        <div id="upiPendingList" class="space-y-3"></div>
+      </div>
+      <div>
+        <h3 class="font-black text-sm mb-3 text-green-600 bg-green-50 px-4 py-2 rounded-xl inline-flex items-center gap-2"><i class="fas fa-check-circle"></i> Verified UPI Orders</h3>
+        <div id="upiVerifiedList" class="space-y-3"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== COMMISSION ========== -->
+  <div id="view-commission" class="hidden slide-up">
+    <h2 class="text-2xl font-black text-slate-800 mb-6">Commission Management</h2>
+    <div class="grid lg:grid-cols-2 gap-6">
+      <div class="bg-white p-6 rounded-[1.5rem] shadow-sm border border-slate-100">
+        <h3 class="font-black text-base mb-5">Global Commission Rate</h3>
+        <div class="space-y-4">
+          <div class="bg-purple-50 p-5 rounded-2xl border border-purple-100 text-center">
+            <p class="text-[10px] font-black text-purple-500 uppercase">Current Rate</p>
+            <h2 class="text-5xl font-black text-purple-700 mt-1"><span id="commRate">20</span>%</h2>
+          </div>
+          <div>
+            <label class="text-[10px] font-bold text-slate-400 uppercase">Set Commission % (per order)</label>
+            <input id="setComm" type="number" min="0" max="50" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-purple-500 mt-1" placeholder="e.g. 20">
+          </div>
+          <button onclick="saveCommission()" class="w-full bg-purple-600 text-white py-3 rounded-xl font-black shadow hover:bg-purple-700 transition">UPDATE RATE</button>
+        </div>
+      </div>
+      <div class="bg-white p-6 rounded-[1.5rem] shadow-sm border border-slate-100">
+        <h3 class="font-black text-base mb-5">Commission by Shop</h3>
+        <div id="commissionByShop" class="space-y-3 max-h-96 overflow-y-auto"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== DELIVERY PRICING ========== -->
+  <div id="view-delivery" class="hidden slide-up">
+    <h2 class="text-2xl font-black text-slate-800 mb-2">Delivery Charge Config</h2>
+    <p class="text-sm text-slate-400 mb-6">Set kilometer-based pricing + surge for peak/rain hours.</p>
+    <div class="grid lg:grid-cols-2 gap-6">
+      <div class="bg-white p-6 rounded-[1.5rem] shadow-sm border border-slate-100">
+        <h3 class="font-black text-base mb-5 flex items-center gap-2"><i class="fas fa-route text-blue-500"></i> Base Pricing</h3>
+        <div class="space-y-4">
+          <div class="bg-blue-50 p-4 rounded-2xl border border-blue-100">
+            <p class="text-xs font-black text-blue-600 mb-2">Formula: Base Fee (0–2km) + Extra per km after 2km</p>
+            <p class="text-xs text-blue-500 font-semibold">Example: 5km = ₹20 + (5-2)×₹5 = ₹35</p>
+          </div>
+          <div>
+            <label class="text-[10px] font-bold text-slate-400 uppercase">Base Fee up to 2km (₹)</label>
+            <input id="baseKm" type="number" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-blue-500 mt-1" placeholder="20">
+          </div>
+          <div>
+            <label class="text-[10px] font-bold text-slate-400 uppercase">Per Extra KM after 2km (₹)</label>
+            <input id="perKm" type="number" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-blue-500 mt-1" placeholder="5">
+          </div>
+        </div>
+      </div>
+      <div class="bg-white p-6 rounded-[1.5rem] shadow-sm border border-slate-100">
+        <h3 class="font-black text-base mb-5 flex items-center gap-2"><i class="fas fa-cloud-rain text-orange-500"></i> Surge / Peak Hours</h3>
+        <div class="space-y-4">
+          <div class="bg-orange-50 p-4 rounded-2xl border border-orange-100">
+            <p class="text-xs font-black text-orange-600 mb-2">Surge adds flat extra on top of base</p>
+            <p class="text-xs text-orange-500 font-semibold">Rain/peak: add ₹10–₹15 extra</p>
+          </div>
+          <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
             <div>
-                <h3 class="font-black text-sm mb-4 bg-blue-50 text-blue-600 px-4 py-2 rounded-xl inline-flex"><i class="fas fa-store mr-2"></i> Shop Requests</h3>
-                <div id="shopReqList" class="space-y-3"></div>
+              <p class="font-black text-sm">Enable Surge</p>
+              <p class="text-[10px] text-slate-400">Toggle surge pricing on/off</p>
             </div>
-            <div>
-                <h3 class="font-black text-sm mb-4 bg-orange-50 text-orange-600 px-4 py-2 rounded-xl inline-flex"><i class="fas fa-motorcycle mr-2"></i> Rider Requests</h3>
-                <div id="riderReqList" class="space-y-3"></div>
-            </div>
+            <label class="relative inline-block w-12 h-6 cursor-pointer">
+              <input type="checkbox" id="surgeToggle" class="sr-only">
+              <span class="block w-12 h-6 bg-slate-300 rounded-full transition-colors" id="surgeTrack"></span>
+              <span class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow transition-transform" id="surgeThumb"></span>
+            </label>
+          </div>
+          <div>
+            <label class="text-[10px] font-bold text-slate-400 uppercase">Surge Extra Amount (₹)</label>
+            <input id="surgeAmt" type="number" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500 mt-1" placeholder="10">
+          </div>
+          <div>
+            <label class="text-[10px] font-bold text-slate-400 uppercase">Surge Reason (shown to user)</label>
+            <input id="surgeReason" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500 mt-1" placeholder="e.g. Peak Hours / Heavy Rain">
+          </div>
         </div>
+      </div>
     </div>
+    <button onclick="saveDeliveryConfig()" class="mt-5 w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 rounded-2xl font-black shadow-xl hover:opacity-90 transition">SAVE DELIVERY CONFIG</button>
+    <div class="mt-4 bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
+      <h3 class="font-black text-sm mb-3">Live Preview</h3>
+      <div class="flex gap-3 items-center">
+        <input id="previewKm" type="number" placeholder="Distance in km" class="border-2 border-slate-100 p-2 rounded-xl text-sm font-bold outline-none w-32">
+        <button onclick="previewFee()" class="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold">CALCULATE</button>
+        <span id="feePreview" class="font-black text-lg text-orange-600"></span>
+      </div>
+    </div>
+  </div>
 
-    <div id="view-shops" class="hidden slide-up">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-            <h2 class="text-2xl font-black text-slate-800">Shop Accounts</h2>
-            <button onclick="document.getElementById('addShopModal').classList.remove('hidden')" class="bg-slate-900 text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow flex items-center gap-2"><i class="fas fa-plus"></i> Add Shop</button>
+  <!-- ========== SETTINGS ========== -->
+  <div id="view-set" class="hidden slide-up">
+    <h2 class="text-2xl font-black text-slate-800 mb-6">Global Configuration</h2>
+    <div class="grid md:grid-cols-2 gap-5">
+      <div class="bg-white p-6 rounded-[1.5rem] shadow-sm border border-slate-100">
+        <h3 class="font-black text-base mb-5 flex items-center gap-2"><i class="fas fa-sliders text-orange-500"></i> App Branding</h3>
+        <div class="space-y-4">
+          <div><label class="text-[10px] font-bold text-slate-400 uppercase">App Name</label><input id="setAppName" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500 mt-1" placeholder="VIKA"></div>
+          <div><label class="text-[10px] font-bold text-slate-400 uppercase">Admin UPI ID</label><input id="setUpi" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500 mt-1" placeholder="yourname@upi"></div>
+          <div><label class="text-[10px] font-bold text-slate-400 uppercase">WhatsApp Help Number</label><input id="setWa" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500 mt-1" placeholder="919876543210"></div>
+          <div><label class="text-[10px] font-bold text-slate-400 uppercase">App Logo URL</label><input id="setLogo" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500 mt-1" placeholder="https://...logo.png"></div>
+          <button id="saveSetBtn" class="w-full bg-gradient-to-r from-orange-500 to-red-600 text-white py-3 rounded-xl font-black shadow hover:opacity-90 transition">UPDATE SETTINGS</button>
         </div>
-        <div class="relative mb-5">
-            <i class="fas fa-search absolute left-4 top-3.5 text-slate-400 text-sm"></i>
-            <input id="shopSearch" placeholder="Search shops by name..." class="w-full bg-white border-2 border-slate-100 p-3 pl-10 rounded-xl font-bold outline-none focus:border-orange-500" oninput="renderShops()">
+      </div>
+      <div class="space-y-5">
+        <div class="bg-white p-6 rounded-[1.5rem] shadow-sm border border-red-100">
+          <h3 class="font-black text-base mb-5 flex items-center gap-2 text-red-600"><i class="fas fa-shield-halved"></i> Security</h3>
+          <div class="space-y-3">
+            <div><label class="text-[10px] font-bold text-slate-400 uppercase">Current PIN</label><input id="oldPin" type="password" placeholder="Current PIN" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-red-400 mt-1"></div>
+            <div><label class="text-[10px] font-bold text-slate-400 uppercase">New PIN</label><input id="newPin" type="password" placeholder="New PIN (min 4 digits)" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-red-400 mt-1"></div>
+            <button id="changePinBtn" class="w-full bg-red-500 text-white py-3 rounded-xl font-black shadow hover:bg-red-600 transition">CHANGE PIN</button>
+          </div>
         </div>
-        <div id="shopList" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        <div class="bg-white p-6 rounded-[1.5rem] shadow-sm border border-slate-100">
+          <h3 class="font-black text-base mb-4 flex items-center gap-2"><i class="fas fa-download text-blue-500"></i> PWA Install</h3>
+          <p class="text-xs text-slate-400 mb-3">Add admin panel to home screen</p>
+          <button id="adminInstallBtn" class="w-full bg-blue-600 text-white py-3 rounded-xl font-black shadow hover:bg-blue-700 transition hidden">INSTALL ADMIN APP</button>
+          <p id="installNote" class="text-xs text-slate-400 text-center">Open in browser to install</p>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <div id="view-riders" class="hidden slide-up">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-            <h2 class="text-2xl font-black text-slate-800">Fleet Management</h2>
-            <button onclick="document.getElementById('addRiderModal').classList.remove('hidden')" class="bg-slate-900 text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow flex items-center gap-2"><i class="fas fa-plus"></i> Add Rider</button>
-        </div>
-        <div class="relative mb-5">
-            <i class="fas fa-search absolute left-4 top-3.5 text-slate-400 text-sm"></i>
-            <input id="riderSearch" placeholder="Search riders by name..." class="w-full bg-white border-2 border-slate-100 p-3 pl-10 rounded-xl font-bold outline-none focus:border-orange-500" oninput="renderRiders()">
-        </div>
-        <div id="riderList" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-    </div>
-
-    <div id="view-ord" class="hidden slide-up">
-        <h2 class="text-2xl font-black text-slate-800 mb-5">Live Order Control</h2>
-        <div class="flex gap-2 mb-5 overflow-x-auto pb-2">
-            <button onclick="filterOrd('All')" id="filt-All" class="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap">All</button>
-            <button onclick="filterOrd('Pending')" id="filt-Pending" class="bg-white border border-slate-200 text-slate-600 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap">Pending</button>
-            <button onclick="filterOrd('Rider Assigned')" id="filt-Assigned" class="bg-white border border-slate-200 text-slate-600 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap">Assigned</button>
-            <button onclick="filterOrd('Delivered')" id="filt-Delivered" class="bg-white border border-slate-200 text-slate-600 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap">Delivered</button>
-        </div>
-        <div id="ordList" class="space-y-3"></div>
-    </div>
-
-    <div id="view-set" class="hidden slide-up">
-        <h2 class="text-2xl font-black text-slate-800 mb-6">Global Configuration</h2>
-        <div class="grid md:grid-cols-2 gap-5">
-            <div class="bg-white p-6 rounded-[1.5rem] shadow-sm border border-slate-100">
-                <h3 class="font-black text-base mb-5"><i class="fas fa-sliders text-orange-500 mr-2"></i> App Parameters</h3>
-                <div class="space-y-4">
-                    <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-1">App Name</label><input id="setAppName" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500 mt-1"></div>
-                    <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Logo URL</label><input id="setLogo" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500 mt-1"></div>
-                    <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Support WhatsApp Number</label><input id="setWa" placeholder="e.g. 919876543210" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500 mt-1"></div>
-                    <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Admin UPI ID (For Payments)</label><input id="setUpi" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500 mt-1"></div>
-                    
-                    <div class="grid grid-cols-3 gap-3 border-t border-slate-100 pt-3">
-                        <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Base Fee (₹) <br><span class="text-[8px] font-normal">(Upto 2km)</span></label><input id="setFee" type="number" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500 mt-1"></div>
-                        <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Per KM Fee (₹) <br><span class="text-[8px] font-normal">(After 2km)</span></label><input id="setPerKm" type="number" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500 mt-1"></div>
-                        <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Peak Surge (₹) <br><span class="text-[8px] font-normal">(Rain/Rush)</span></label><input id="setSurge" type="number" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500 mt-1"></div>
-                    </div>
-                    
-                    <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Shop Commission (%)</label><input id="setComm" type="number" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500 mt-1" placeholder="e.g. 20"></div>
-                    
-                    <button id="saveSetBtn" class="w-full bg-gradient-to-r from-orange-500 to-red-600 text-white py-4 rounded-xl font-black shadow-lg hover:opacity-90 transition">UPDATE SETTINGS</button>
-                </div>
-            </div>
-            
-            <div class="space-y-5">
-                <div class="bg-white p-6 rounded-[1.5rem] shadow-sm border border-red-100">
-                    <h3 class="font-black text-base mb-5 text-red-600"><i class="fas fa-shield-halved mr-2"></i> Security</h3>
-                    <div class="space-y-4">
-                        <input id="oldPin" type="password" placeholder="Current PIN" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-red-400">
-                        <input id="newPin" type="password" placeholder="New PIN" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-red-400">
-                        <button id="changePinBtn" class="w-full bg-slate-900 text-white py-3 rounded-xl font-black hover:bg-black transition">CHANGE PIN</button>
-                    </div>
-                </div>
-                
-                <div class="bg-red-50 p-6 rounded-[1.5rem] shadow-sm border border-red-200 text-center">
-                    <h3 class="font-black text-base mb-2 text-red-700"><i class="fas fa-triangle-exclamation mr-2"></i>Danger Zone</h3>
-                    <p class="text-xs text-red-500 mb-4 font-bold">Wipe all application data permanently (Orders, Shops, Riders, etc.). This cannot be undone.</p>
-                    <button onclick="wipeData()" class="w-full bg-red-600 text-white py-4 rounded-xl font-black shadow-lg hover:bg-red-700 transition">WIPE ALL DATA</button>
-                </div>
-            </div>
-        </div>
-    </div>
 </main>
 
-<div id="editShopModal" class="hidden fixed inset-0 bg-black/80 z-[120] flex items-center justify-center p-5 backdrop-blur-sm">
-    <div class="bg-white p-6 rounded-[2rem] w-full max-w-sm shadow-2xl slide-up">
-        <h3 class="font-black text-lg mb-5 text-slate-800">Edit Shop</h3>
-        <input type="hidden" id="esId">
-        <div class="space-y-4">
-            <div>
-                <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Shop Name</label>
-                <input id="esName" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500 mt-1">
-            </div>
-            <div>
-                <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Phone Number</label>
-                <input id="esPhone" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500 mt-1">
-            </div>
-            <div>
-                <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Password</label>
-                <input id="esPass" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500 mt-1">
-            </div>
-            <div>
-                <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Map Location (Lat,Lng)</label>
-                <input id="esLoc" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500 mt-1">
-            </div>
-            <label class="flex items-center gap-3 p-3 bg-red-50 border border-red-100 rounded-xl cursor-pointer">
-                <input type="checkbox" id="esBlock" class="w-4 h-4 accent-red-600">
-                <span class="font-black text-sm text-red-600">Block Shop Access</span>
-            </label>
-        </div>
-        <button onclick="saveShopEdit()" class="w-full bg-blue-600 text-white py-4 rounded-xl font-black mt-5 shadow-lg hover:bg-blue-700 transition">SAVE CHANGES</button>
-        <button onclick="document.getElementById('editShopModal').classList.add('hidden')" class="w-full text-slate-400 py-3 mt-1 text-xs font-bold hover:text-slate-600">Cancel</button>
-    </div>
+<!-- ===================== MODALS ===================== -->
+<!-- Settle -->
+<div id="settleModal" class="fixed inset-0 modal-backdrop z-[110] hidden flex items-center justify-center p-6">
+  <div class="bg-white w-full max-w-sm rounded-[2.5rem] p-8 shadow-2xl slide-up text-center">
+    <h3 class="text-xl font-black mb-1" id="stRiderName">Rider</h3>
+    <p class="text-xs text-slate-400 mb-5">Cash Settlement</p>
+    <div class="bg-green-50 p-6 rounded-3xl border border-green-100 mb-5"><p class="text-[10px] font-black text-green-600 uppercase">Cash To Collect</p><h2 class="text-5xl font-black text-green-600 mt-2">₹<span id="stAmount">0</span></h2></div>
+    <button id="confirmSettleBtn" class="w-full bg-slate-900 text-white py-4 rounded-xl font-black shadow mb-3 hover:bg-black transition">COLLECT & MARK SETTLED</button>
+    <button onclick="closeModal('settleModal')" class="w-full text-xs font-bold text-slate-400 py-2">Cancel</button>
+  </div>
 </div>
 
-<div id="editRiderModal" class="hidden fixed inset-0 bg-black/80 z-[120] flex items-center justify-center p-5 backdrop-blur-sm">
-    <div class="bg-white p-6 rounded-[2rem] w-full max-w-sm shadow-2xl slide-up">
-        <h3 class="font-black text-lg mb-5 text-slate-800">Edit Rider</h3>
-        <input type="hidden" id="erId">
-        <div class="space-y-4">
-            <div>
-                <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Rider Name</label>
-                <input id="erName" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500 mt-1">
-            </div>
-            <div>
-                <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Phone Number</label>
-                <input id="erPhone" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500 mt-1">
-            </div>
-            <div>
-                <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Password</label>
-                <input id="erPass" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500 mt-1">
-            </div>
-            <label class="flex items-center gap-3 p-3 bg-red-50 border border-red-100 rounded-xl cursor-pointer">
-                <input type="checkbox" id="erBlock" class="w-4 h-4 accent-red-600">
-                <span class="font-black text-sm text-red-600">Block Rider Access</span>
-            </label>
-        </div>
-        <button onclick="saveRiderEdit()" class="w-full bg-indigo-600 text-white py-4 rounded-xl font-black mt-5 shadow-lg hover:bg-indigo-700 transition">SAVE CHANGES</button>
-        <button onclick="document.getElementById('editRiderModal').classList.add('hidden')" class="w-full text-slate-400 py-3 mt-1 text-xs font-bold hover:text-slate-600">Cancel</button>
-    </div>
+<!-- Assign -->
+<div id="assignModal" class="fixed inset-0 modal-backdrop z-[110] hidden flex items-center justify-center p-6">
+  <div class="bg-white w-full max-w-sm rounded-[2.5rem] p-8 shadow-2xl slide-up">
+    <h3 class="text-xl font-black mb-1">Assign Rider</h3>
+    <input type="hidden" id="asOrderId">
+    <p class="text-xs text-slate-400 mb-4">Select an online rider:</p>
+    <div id="onlineRiderList" class="space-y-2 mb-5 max-h-64 overflow-y-auto"></div>
+    <button onclick="closeModal('assignModal')" class="w-full bg-slate-100 text-slate-500 py-3 rounded-xl font-bold text-xs hover:bg-slate-200 transition">Cancel</button>
+  </div>
 </div>
 
-<div id="riderDashModal" class="hidden fixed inset-0 bg-black/80 z-[120] flex items-center justify-center p-5 backdrop-blur-sm">
-    <div class="bg-white p-6 rounded-[2rem] w-full max-w-sm shadow-2xl slide-up text-center">
-        <div class="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-2xl flex items-center justify-center text-3xl font-black mx-auto mb-3 shadow-lg" id="rdAvatar"></div>
-        <h3 class="font-black text-xl text-slate-800 tracking-tight" id="rdName">Name</h3>
-        <p class="text-xs font-bold text-slate-500 mb-6" id="rdPhone">Phone</p>
-        
-        <div class="grid grid-cols-2 gap-3 mb-6">
-            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Total Deliveries</p>
-                <p class="text-2xl font-black text-slate-800 mt-1" id="rdCount">0</p>
-            </div>
-            <div class="bg-green-50 p-4 rounded-2xl border border-green-100">
-                <p class="text-[9px] font-black text-green-600 uppercase tracking-widest">Total Earnings</p>
-                <p class="text-2xl font-black text-green-700 mt-1" id="rdEarn">₹0</p>
-            </div>
-            
-            <div class="bg-orange-50 p-4 rounded-2xl border border-orange-200 relative overflow-hidden">
-                <p class="text-[9px] font-black text-orange-600 uppercase tracking-widest">Cash In Hand (COD)</p>
-                <p class="text-xl font-black text-orange-700 mt-1" id="rdCod">₹0</p>
-                <button id="settleCodBtn" class="hidden absolute bottom-3 right-3 bg-orange-600 text-white px-3 py-1.5 rounded-lg text-[9px] font-black shadow hover:bg-orange-700 transition tap">SETTLE</button>
-            </div>
-            
-            <div class="bg-blue-50 p-4 rounded-2xl border border-blue-100">
-                <p class="text-[9px] font-black text-blue-600 uppercase tracking-widest">UPI Collected</p>
-                <p class="text-xl font-black text-blue-700 mt-1" id="rdUpi">₹0</p>
-            </div>
-        </div>
-        <button onclick="document.getElementById('riderDashModal').classList.add('hidden')" class="w-full bg-slate-900 text-white py-4 rounded-xl font-black shadow-lg hover:bg-black transition">Close Dashboard</button>
+<!-- Add Shop -->
+<div id="addShopModal" class="hidden fixed inset-0 modal-backdrop z-[120] flex items-center justify-center p-5">
+  <div class="bg-white p-6 rounded-[2rem] w-full max-w-sm shadow-2xl slide-up max-h-[90vh] overflow-y-auto">
+    <h3 class="font-black text-lg mb-5">Add New Shop</h3>
+    <div class="space-y-3">
+      <input id="nsName" placeholder="Shop Name *" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500">
+      <input id="nsPhone" placeholder="Phone Number *" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500">
+      <input id="nsPass" placeholder="Password *" type="password" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500">
+      <input id="nsLoc" placeholder="Lat,Lng (e.g. 28.9,77.0)" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500">
+      <input id="nsEmoji" placeholder="Emoji icon (e.g. 🍕)" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500">
+      <div>
+        <label class="text-[10px] font-bold text-slate-400 uppercase">Commission %</label>
+        <input id="nsComm" type="number" placeholder="Default: 20" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500 mt-1">
+      </div>
     </div>
+    <button onclick="createShop()" class="w-full bg-gradient-to-r from-orange-500 to-red-600 text-white py-3 rounded-xl font-black shadow mt-4 hover:opacity-90 transition">CREATE SHOP</button>
+    <button onclick="closeModal('addShopModal')" class="mt-2 text-xs text-center w-full text-slate-400 py-2">Cancel</button>
+  </div>
 </div>
 
-<div id="addShopModal" class="hidden fixed inset-0 bg-black/80 z-[120] flex items-center justify-center p-5 backdrop-blur-sm">
-    <div class="bg-white p-6 rounded-[2rem] w-full max-w-sm shadow-2xl slide-up">
-        <h3 class="font-black text-lg mb-5 text-slate-800">Add New Shop</h3>
-        <div class="space-y-3">
-            <input id="nsName" placeholder="Shop Name" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500">
-            <input id="nsPhone" placeholder="Phone Number" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500">
-            <input id="nsPass" placeholder="Password" type="password" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500">
-            <button onclick="createShop()" class="w-full bg-gradient-to-r from-orange-500 to-red-600 text-white py-4 rounded-xl font-black mt-2 shadow-lg">CREATE SHOP</button>
-            <button onclick="document.getElementById('addShopModal').classList.add('hidden')" class="w-full text-xs text-slate-400 py-2 font-bold">Cancel</button>
-        </div>
+<!-- Edit Shop -->
+<div id="editShopModal" class="hidden fixed inset-0 modal-backdrop z-[120] flex items-center justify-center p-5">
+  <div class="bg-white p-6 rounded-[2rem] w-full max-w-sm shadow-2xl slide-up max-h-[90vh] overflow-y-auto">
+    <h3 class="font-black text-lg mb-5">Edit Shop</h3>
+    <input type="hidden" id="editShopId">
+    <div class="space-y-3">
+      <input id="esName" placeholder="Shop Name" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500">
+      <input id="esPhone" placeholder="Phone" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500">
+      <input id="esPass" placeholder="New Password (leave blank to keep)" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500">
+      <input id="esLoc" placeholder="Lat,Lng" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500">
+      <input id="esEmoji" placeholder="Emoji" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500">
+      <div>
+        <label class="text-[10px] font-bold text-slate-400 uppercase">Commission %</label>
+        <input id="esComm" type="number" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500 mt-1">
+      </div>
     </div>
+    <button onclick="saveShopEdit()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-black shadow mt-4 hover:bg-blue-700 transition">SAVE CHANGES</button>
+    <button onclick="closeModal('editShopModal')" class="mt-2 text-xs text-center w-full text-slate-400 py-2">Cancel</button>
+  </div>
 </div>
-<div id="addRiderModal" class="hidden fixed inset-0 bg-black/80 z-[120] flex items-center justify-center p-5 backdrop-blur-sm">
-    <div class="bg-white p-6 rounded-[2rem] w-full max-w-sm shadow-2xl slide-up">
-        <h3 class="font-black text-lg mb-5 text-slate-800">Add New Rider</h3>
-        <div class="space-y-3">
-            <input id="nrName" placeholder="Rider Name" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-indigo-500">
-            <input id="nrPhone" placeholder="Phone Number" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-indigo-500">
-            <input id="nrPass" placeholder="Password" type="password" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-indigo-500">
-            <button onclick="createRider()" class="w-full bg-indigo-600 text-white py-4 rounded-xl font-black mt-2 shadow-lg">ADD RIDER</button>
-            <button onclick="document.getElementById('addRiderModal').classList.add('hidden')" class="w-full text-xs text-slate-400 py-2 font-bold">Cancel</button>
-        </div>
+
+<!-- Add Rider -->
+<div id="addRiderModal" class="hidden fixed inset-0 modal-backdrop z-[120] flex items-center justify-center p-5">
+  <div class="bg-white p-6 rounded-[2rem] w-full max-w-sm shadow-2xl slide-up">
+    <h3 class="font-black text-lg mb-5">Add Rider Directly</h3>
+    <div class="space-y-3">
+      <input id="nrName" placeholder="Rider Name *" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500">
+      <input id="nrPhone" placeholder="Phone *" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500">
+      <input id="nrPass" placeholder="Password *" type="password" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500">
+      <select id="nrVeh" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500 bg-white">
+        <option>Motorcycle</option><option>Scooter</option><option>Electric Bike</option><option>Bicycle</option>
+      </select>
     </div>
+    <button onclick="createRider()" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-black shadow mt-4 hover:bg-indigo-700 transition">ADD RIDER</button>
+    <button onclick="closeModal('addRiderModal')" class="mt-2 text-xs text-center w-full text-slate-400 py-2">Cancel</button>
+  </div>
+</div>
+
+<!-- Edit Rider -->
+<div id="editRiderModal" class="hidden fixed inset-0 modal-backdrop z-[120] flex items-center justify-center p-5">
+  <div class="bg-white p-6 rounded-[2rem] w-full max-w-sm shadow-2xl slide-up">
+    <h3 class="font-black text-lg mb-5">Edit Rider</h3>
+    <input type="hidden" id="editRiderId">
+    <div class="space-y-3">
+      <input id="erName" placeholder="Name" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500">
+      <input id="erPhone" placeholder="Phone" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500">
+      <input id="erPass" placeholder="New Password (leave blank to keep)" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500">
+      <select id="erVeh" class="w-full border-2 border-slate-100 p-3 rounded-xl font-bold outline-none focus:border-orange-500 bg-white">
+        <option>Motorcycle</option><option>Scooter</option><option>Electric Bike</option><option>Bicycle</option>
+      </select>
+      <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
+        <span class="font-bold text-sm">Block Rider</span>
+        <input type="checkbox" id="erBlocked" class="w-5 h-5 accent-red-500">
+      </div>
+    </div>
+    <button onclick="saveRiderEdit()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-black shadow mt-4 hover:bg-blue-700 transition">SAVE CHANGES</button>
+    <button onclick="closeModal('editRiderModal')" class="mt-2 text-xs text-center w-full text-slate-400 py-2">Cancel</button>
+  </div>
+</div>
+
+<!-- Rider Dashboard -->
+<div id="riderDashModal" class="hidden fixed inset-0 modal-backdrop z-[130] flex items-center justify-center p-5">
+  <div class="bg-white w-full max-w-lg rounded-[2rem] shadow-2xl slide-up max-h-[90vh] overflow-y-auto">
+    <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+      <h3 class="font-black text-xl" id="rdName">Rider Dashboard</h3>
+      <button onclick="closeModal('riderDashModal')" class="w-9 h-9 bg-slate-100 rounded-xl flex items-center justify-center text-slate-500"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="p-6">
+      <div class="grid grid-cols-2 gap-3 mb-5">
+        <div class="bg-green-50 p-4 rounded-2xl text-center border border-green-100"><p class="text-[9px] font-black text-green-600 uppercase">Total Earnings</p><h3 class="text-2xl font-black text-green-700">₹<span id="rdEarn">0</span></h3></div>
+        <div class="bg-blue-50 p-4 rounded-2xl text-center border border-blue-100"><p class="text-[9px] font-black text-blue-600 uppercase">Total Deliveries</p><h3 class="text-2xl font-black text-blue-700"><span id="rdDel">0</span></h3></div>
+        <div class="bg-orange-50 p-4 rounded-2xl text-center border border-orange-100"><p class="text-[9px] font-black text-orange-600 uppercase">COD Collected</p><h3 class="text-2xl font-black text-orange-700">₹<span id="rdCod">0</span></h3></div>
+        <div class="bg-purple-50 p-4 rounded-2xl text-center border border-purple-100"><p class="text-[9px] font-black text-purple-600 uppercase">UPI Orders</p><h3 class="text-2xl font-black text-purple-700"><span id="rdUpi">0</span></h3></div>
+      </div>
+      <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 mb-4">
+        <p class="text-[10px] font-black text-slate-400 uppercase mb-3">Order History</p>
+        <div id="rdOrderList" class="space-y-2 max-h-48 overflow-y-auto"></div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, updateDoc, doc, onSnapshot, deleteDoc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, updateDoc, doc, onSnapshot, query, where, deleteDoc, setDoc, getDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// === FIREBASE CONFIG ===
-const app = initializeApp({
-    apiKey: "AIzaSyCwyzE9sdZZUU3dHUix23zEzFkGr2nNRyw", 
-    authDomain: "foodhub-8ae15.firebaseapp.com",
-    projectId: "foodhub-8ae15", 
-    storageBucket: "foodhub-8ae15.firebasestorage.app",
-    messagingSenderId: "274265160043", 
-    appId: "1:274265160043:web:81238fd424681e7f70342e"
-});
+const firebaseConfig = { apiKey:"AIzaSyCwyzE9sdZZUU3dHUix23zEzFkGr2nNRyw",authDomain:"foodhub-8ae15.firebaseapp.com",projectId:"foodhub-8ae15",storageBucket:"foodhub-8ae15.firebasestorage.app",messagingSenderId:"274265160043",appId:"1:274265160043:web:81238fd424681e7f70342e" };
+const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-let orders = [], riders = [], shops = [], reqs = [], riderReqs = [], globalSet = {};
-let audioAllowed = false;
+let orders=[], riders=[], shops=[], reqs=[], riderReqs=[], audioAllowed=false, globalSettings={};
+let currentOrdFilter = 'All';
 
-document.body.addEventListener('click', () => {
-    if (!audioAllowed) {
-        document.getElementById('alertSound').play().then(() => {
-            document.getElementById('alertSound').pause();
-            document.getElementById('alertSound').currentTime = 0;
-            audioAllowed = true;
-        }).catch(() => {});
-    }
-}, { once: false });
+// audio
+document.body.addEventListener('click',()=>{ if(!audioAllowed){document.getElementById('alertSound').play().then(()=>{document.getElementById('alertSound').pause();document.getElementById('alertSound').currentTime=0;audioAllowed=true;}).catch(()=>{}); }});
 
-// === AUTH ===
-window.auth = async () => {
-    let pin = document.getElementById('pin').value;
-    let btn = document.getElementById('loginBtn');
-    if (!pin) return;
-    btn.innerHTML = '<span class="spinner"></span>';
-    btn.disabled = true;
+// PWA
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;let btn=document.getElementById('adminInstallBtn');if(btn){btn.classList.remove('hidden');document.getElementById('installNote').classList.add('hidden');}});
+document.getElementById('adminInstallBtn')?.addEventListener('click',()=>{if(deferredPrompt){deferredPrompt.prompt();}});
 
-    try {
-        let snap = await getDoc(doc(db, "settings", "security"));
-        if (pin === (snap.exists() && snap.data().adminPin ? snap.data().adminPin : "1234")) {
-            document.getElementById('login').classList.add('hidden');
-            document.getElementById('mainPanel').classList.remove('hidden');
-            initData();
-        } else alert("⛔ Access Denied: Wrong PIN");
-    } catch(e) { alert("Network Error. Check connection."); }
-    
-    btn.innerHTML = 'UNLOCK SYSTEM';
-    btn.disabled = false;
+// Surge toggle
+const surgeToggle=document.getElementById('surgeToggle');
+const surgeTrack=document.getElementById('surgeTrack');
+const surgeThumb=document.getElementById('surgeThumb');
+surgeToggle?.addEventListener('change',e=>{
+  if(e.target.checked){surgeTrack.classList.add('bg-orange-500');surgeTrack.classList.remove('bg-slate-300');surgeThumb.style.transform='translateX(24px)';}
+  else{surgeTrack.classList.remove('bg-orange-500');surgeTrack.classList.add('bg-slate-300');surgeThumb.style.transform='translateX(0)';}
+});
+
+// ===================== AUTH =====================
+window.auth = async()=>{
+  let pin=document.getElementById('pin').value;
+  if(!pin) return;
+  let btn=document.getElementById('loginBtn');
+  btn.innerHTML='<span class="spinner"></span> Verifying...';
+  btn.disabled=true;
+  try{
+    let snap=await getDoc(doc(db,'settings','security'));
+    let real=(snap.exists()&&snap.data().adminPin)?snap.data().adminPin:'1234';
+    if(pin===real){
+      document.getElementById('login').classList.add('hidden');
+      document.getElementById('mainPanel').classList.remove('hidden');
+      initData();
+    } else alert('⛔ Wrong PIN');
+  }catch(e){alert('Connection error');}
+  btn.innerHTML='UNLOCK SYSTEM';btn.disabled=false;
 };
 
-// === INIT DATA ===
-function initData() {
-    // Global Settings
-    onSnapshot(doc(db, "settings", "global"), s => {
-        if(s.exists()) {
-            globalSet = s.data();
-            ['AppName','Logo','Wa','Upi','Fee','PerKm','Surge','Comm'].forEach(k => {
-                if(document.getElementById('set'+k)) document.getElementById('set'+k).value = globalSet[k.toLowerCase()] || '';
-            });
-            // Update UI visuals dynamically
-            if(globalSet.logo) {
-                document.getElementById('loginLogo').src = globalSet.logo;
-                document.getElementById('sideLogo').src = globalSet.logo;
-                document.getElementById('dynamicFavicon').href = globalSet.logo;
-            }
-            if(globalSet.appname) {
-                document.getElementById('hqTitle').innerText = globalSet.appname + " HQ";
-            }
-        }
-    });
-
-    // Orders
-    onSnapshot(collection(db, "orders"), s => {
-        orders = s.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => b.timestamp - a.timestamp);
-        updateDash(); 
-        renderOrd();
-        
-        let pending = orders.filter(o => o.status === 'Pending');
-        document.getElementById('pendingBadge').innerText = pending.length;
-        document.getElementById('pendingBadge').classList.toggle('hidden', pending.length === 0);
-        if (pending.length > 0 && audioAllowed) document.getElementById('alertSound')?.play().catch(() => {});
-    });
-
-    // Shops
-    onSnapshot(collection(db, "shops"), s => { 
-        shops = s.docs.map(d => ({id: d.id, ...d.data()})); 
-        renderShops(); 
-    });
-
-    // Riders
-    onSnapshot(collection(db, "riders"), s => { 
-        riders = s.docs.map(d => ({id: d.id, ...d.data()})); 
-        renderRiders(); 
-    });
-
-    // Requests
-    onSnapshot(collection(db, "shop_requests"), s => { 
-        reqs = s.docs.map(d => ({id: d.id, ...d.data()})); 
-        renderReqs(); 
-    });
-    onSnapshot(collection(db, "rider_requests"), s => { 
-        riderReqs = s.docs.map(d => ({id: d.id, ...d.data()})); 
-        renderReqs(); 
-    });
+// ===================== INIT =====================
+function initData(){
+  onSnapshot(collection(db,'orders'),s=>{
+    orders=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>b.timestamp-a.timestamp);
+    document.getElementById('dashOrd').innerText=orders.length;
+    let pending=orders.filter(o=>o.status==='Pending');
+    document.getElementById('pendingBadge').innerText=pending.length;
+    document.getElementById('pendingBadge').classList.toggle('hidden',pending.length===0);
+    if(pending.length>0&&audioAllowed)document.getElementById('alertSound')?.play().catch(()=>{});
+    renderDash();renderOrdersFiltered();renderUpiView();renderActivity();
+  });
+  onSnapshot(collection(db,'shops'),s=>{shops=s.docs.map(d=>({id:d.id,...d.data()}));document.getElementById('dashShops').innerText=shops.length;renderShops();renderCommissionView();});
+  onSnapshot(collection(db,'riders'),s=>{riders=s.docs.map(d=>({id:d.id,...d.data()}));document.getElementById('dashOnlineRiders').innerText=riders.filter(r=>r.isOnline).length;renderRiders();});
+  onSnapshot(collection(db,'shop_requests'),s=>{reqs=s.docs.map(d=>({id:d.id,...d.data()}));renderApprovals();});
+  onSnapshot(collection(db,'rider_requests'),s=>{riderReqs=s.docs.map(d=>({id:d.id,...d.data()}));renderApprovals();});
+  onSnapshot(doc(db,'settings','global'),s=>{
+    if(s.exists()){
+      globalSettings=s.data();
+      let d=s.data();
+      document.getElementById('setAppName').value=d.appName||'';
+      document.getElementById('setUpi').value=d.upi||'';
+      document.getElementById('setWa').value=d.waNumber||'';
+      document.getElementById('setLogo').value=d.logoUrl||'';
+      document.getElementById('setComm').value=d.commissionRate||20;
+      document.getElementById('commRate').innerText=d.commissionRate||20;
+      document.getElementById('baseKm').value=d.baseKmFee||20;
+      document.getElementById('perKm').value=d.perKmFee||5;
+      document.getElementById('surgeAmt').value=d.surgeAmt||10;
+      document.getElementById('surgeReason').value=d.surgeReason||'Peak Hours';
+      if(d.surgeActive){surgeToggle.checked=true;surgeTrack.classList.add('bg-orange-500');surgeThumb.style.transform='translateX(24px)';}
+      applyBranding(d);
+    }
+  });
 }
 
-// === DASHBOARD STATS ===
-function updateDash() {
-    document.getElementById('dashOrd').innerText = orders.length;
-    document.getElementById('dashShops').innerText = shops.length;
-    document.getElementById('dashRiders').innerText = riders.length;
-    
-    let deliv = orders.filter(o => o.status === 'Delivered');
-    document.getElementById('totalRevenue').innerText = '₹' + deliv.reduce((a,b) => a + (parseInt(b.total)||0), 0);
-    
-    let today = new Date().toLocaleDateString('en-IN');
-    let tDeliv = deliv.filter(o => o.date === today);
-    document.getElementById('revenueStats').innerHTML = `
-        <div class="flex justify-between items-center py-2 border-b border-slate-50"><span class="font-bold text-slate-600 text-sm">Today's Deliveries</span><span class="font-black text-lg">${tDeliv.length}</span></div>
-        <div class="flex justify-between items-center py-2 border-b border-slate-50"><span class="font-bold text-slate-600 text-sm">Today's Revenue</span><span class="font-black text-green-600 text-lg">₹${tDeliv.reduce((a,b)=>a+(parseInt(b.total)||0),0)}</span></div>
-        <div class="flex justify-between items-center py-2"><span class="font-bold text-slate-600 text-sm">Pending Orders</span><span class="font-black text-orange-500 text-lg">${orders.filter(o=>o.status==='Pending').length}</span></div>`;
-    
-    document.getElementById('recentActivity').innerHTML = orders.slice(0,5).map(o => `
-        <div class="flex justify-between items-center py-2.5 border-b border-slate-50 last:border-0">
-            <div>
-                <span class="font-black text-slate-800 text-sm">#${o.id.substr(0,6).toUpperCase()}</span>
-                <p class="text-[10px] text-slate-400 font-bold">${o.customer?.name || 'Customer'}</p>
-            </div>
-            <div class="text-right">
-                <span class="font-black text-sm">₹${o.total}</span>
-                <p class="text-[9px] font-black ${o.status==='Pending'?'text-red-500': 'text-slate-400'}">${o.status}</p>
-            </div>
-        </div>`).join('') || '<p class="text-xs text-slate-400">No activity</p>';
+function applyBranding(d){
+  if(d.appName){
+    document.getElementById('loginAppTitle').innerText=d.appName+' ADMIN';
+    document.getElementById('sideAppName').innerText=d.appName+' HQ';
+    document.title=d.appName+' Admin';
+  }
+  if(d.logoUrl){
+    ['loginLogoBox','sideLogoBox'].forEach(id=>{
+      let el=document.getElementById(id);
+      if(el){el.style.background='none';el.innerHTML=`<img src="${d.logoUrl}" class="w-full h-full object-cover rounded-xl">`;}
+    });
+    document.getElementById('faviconEl')?.setAttribute('href',d.logoUrl);
+  }
 }
 
-// === RENDERERS ===
-window.renderShops = () => {
-    let q = (document.getElementById('shopSearch')?.value||'').toLowerCase();
-    document.getElementById('shopList').innerHTML = shops.filter(s => (s.shopName||'').toLowerCase().includes(q)).map(s => `
-        <div class="bg-white p-5 rounded-[1.5rem] shadow-sm border border-slate-100 relative ${s.isBlocked ? 'opacity-60 bg-slate-50' : ''}">
-            ${s.isBlocked ? '<div class="absolute top-2 left-2 bg-red-500 text-white text-[8px] font-black px-2 py-0.5 rounded-full uppercase">Blocked</div>' : ''}
-            <div class="flex justify-between items-start mb-3 mt-2">
-                <div>
-                    <h4 class="font-black text-lg leading-tight">${s.shopName}</h4>
-                    <p class="text-xs font-bold text-slate-400 mt-0.5">${s.phone}</p>
-                </div>
-                <div class="flex gap-2">
-                    <button onclick="openShopEdit('${s.id}')" class="w-8 h-8 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center hover:bg-blue-500 hover:text-white transition"><i class="fas fa-pen text-xs"></i></button>
-                    <button onclick="if(confirm('Delete Shop permanently?')) deleteDoc(doc(db,'shops','${s.id}'))" class="w-8 h-8 bg-red-50 text-red-500 rounded-xl flex items-center justify-center hover:bg-red-500 hover:text-white transition"><i class="fas fa-trash text-xs"></i></button>
-                </div>
-            </div>
-            <p class="text-[10px] font-mono bg-slate-100 p-2 rounded-lg truncate">${s.location || 'No Location Set'}</p>
-        </div>`).join('') || '<p class="text-xs text-slate-400 text-center py-6 w-full col-span-full">No shops found</p>';
-};
+// ===================== DASHBOARD =====================
+function renderDash(){
+  let filter=document.getElementById('dashFilter')?.value||'today';
+  let now=Date.now();
+  let filtered=orders.filter(o=>{
+    if(filter==='today') return o.date===new Date().toLocaleDateString('en-IN');
+    if(filter==='week') return now-o.timestamp<7*24*3600*1000;
+    if(filter==='month') return now-o.timestamp<30*24*3600*1000;
+    return true;
+  });
+  let delivered=filtered.filter(o=>o.status==='Delivered');
+  let rev=delivered.reduce((a,b)=>a+(parseInt(b.total)||0),0);
+  let upiRev=delivered.filter(o=>o.paymentMethod==='UPI').reduce((a,b)=>a+(parseInt(b.total)||0),0);
+  let codRev=delivered.filter(o=>o.paymentMethod!=='UPI').reduce((a,b)=>a+(parseInt(b.total)||0),0);
+  let commRate=globalSettings.commissionRate||20;
+  let comm=Math.round(rev*commRate/100);
+  document.getElementById('dashRev').innerText='₹'+rev;
+  document.getElementById('dashUpi').innerText=upiRev;
+  document.getElementById('dashCod').innerText=codRev;
+  document.getElementById('dashComm').innerText=comm;
+  document.getElementById('dashPend').innerText=filtered.filter(o=>o.status==='Pending').length;
+  renderActivity();renderTopShops();
+}
+window.renderDash=renderDash;
 
-window.renderRiders = () => {
-    let q = (document.getElementById('riderSearch')?.value||'').toLowerCase();
-    document.getElementById('riderList').innerHTML = riders.filter(r => (r.name||'').toLowerCase().includes(q)).map(r => `
-        <div class="bg-white p-5 rounded-[1.5rem] shadow-sm border border-slate-100 relative ${r.isBlocked ? 'opacity-60 bg-slate-50' : ''}">
-            ${r.isBlocked ? '<div class="absolute top-2 left-2 bg-red-500 text-white text-[8px] font-black px-2 py-0.5 rounded-full uppercase">Blocked</div>' : ''}
-            <div class="flex justify-between items-start mb-3 mt-2">
-                <div>
-                    <h4 class="font-black text-lg leading-tight">${r.name}</h4>
-                    <p class="text-xs font-bold text-slate-400 mt-0.5">${r.phone}</p>
-                </div>
-                <div class="flex gap-2">
-                    <button onclick="openRiderDash('${r.id}')" class="w-8 h-8 bg-green-50 text-green-600 rounded-xl flex items-center justify-center hover:bg-green-500 hover:text-white transition" title="Dashboard"><i class="fas fa-chart-pie text-xs"></i></button>
-                    <button onclick="openRiderEdit('${r.id}')" class="w-8 h-8 bg-indigo-50 text-indigo-500 rounded-xl flex items-center justify-center hover:bg-indigo-500 hover:text-white transition"><i class="fas fa-pen text-xs"></i></button>
-                    <button onclick="if(confirm('Delete Rider permanently?')) deleteDoc(doc(db,'riders','${r.id}'))" class="w-8 h-8 bg-red-50 text-red-500 rounded-xl flex items-center justify-center hover:bg-red-500 hover:text-white transition"><i class="fas fa-trash text-xs"></i></button>
-                </div>
-            </div>
-        </div>`).join('') || '<p class="text-xs text-slate-400 text-center py-6 w-full col-span-full">No riders found</p>';
-};
-
-window.renderOrd = () => {
-    let filt = document.querySelector('[id^="filt-"].bg-slate-900')?.innerText || 'All';
-    let list = filt === 'All' ? orders : orders.filter(o => o.status === filt);
-    
-    document.getElementById('ordList').innerHTML = list.map(o => {
-        let upiTag = '';
-        if(o.paymentMethod === 'UPI') {
-            if(o.paymentApproved) {
-                upiTag = `<span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[9px] font-black"><i class="fas fa-check-circle mr-1"></i>UTR: ${o.utr} (Verified)</span>`;
-            } else {
-                upiTag = `<span class="bg-red-100 text-red-600 px-2 py-0.5 rounded text-[9px] font-black blink"><i class="fas fa-triangle-exclamation mr-1"></i>UTR: ${o.utr} (UNVERIFIED)</span>`;
-            }
-        }
-
-        return `
-        <div class="bg-white p-5 rounded-[1.5rem] border border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-sm relative overflow-hidden">
-            ${o.status === 'Pending' ? '<div class="absolute top-0 left-0 w-1 h-full bg-red-500"></div>' : ''}
-            <div>
-                <div class="flex items-center gap-2 mb-1">
-                    <span class="text-[10px] font-black bg-slate-100 text-slate-500 px-2.5 py-1 rounded-lg">#${o.id.substr(0,6).toUpperCase()}</span>
-                    <span class="text-[10px] font-bold text-slate-400">${new Date(o.timestamp).toLocaleString('en-IN')}</span>
-                </div>
-                <p class="font-black text-sm text-slate-800 mt-1">₹${o.total} <span class="text-slate-400 font-bold mx-1">|</span> <span class="${o.paymentMethod==='UPI'?'text-blue-500':'text-orange-500'}">${o.paymentMethod||'COD'}</span></p>
-                <div class="mt-1.5">${upiTag}</div>
-                <p class="text-[10px] text-slate-500 font-bold mt-1.5">Rider: ${o.riderName || '<span class="text-red-400">Not Assigned</span>'}</p>
-            </div>
-            
-            <div class="flex flex-wrap gap-2 w-full sm:w-auto">
-                ${o.paymentMethod === 'UPI' && !o.paymentApproved ? `
-                    <button onclick="approveUPI('${o.id}')" class="flex-1 sm:flex-none bg-blue-600 text-white px-4 py-2 rounded-xl text-xs font-black shadow hover:bg-blue-700 transition"><i class="fas fa-check-double mr-1"></i> Verify UPI</button>
-                ` : ''}
-                
-                <select onchange="updateDoc(doc(db,'orders','${o.id}'),{status:this.value})" class="flex-1 sm:flex-none bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-xs font-bold outline-none focus:border-orange-500">
-                    <option value="${o.status}">${o.status}</option>
-                    <option value="Pending">Pending</option>
-                    <option value="Preparing">Preparing</option>
-                    <option value="Ready for Pickup">Ready for Pickup</option>
-                    <option value="Rider Assigned">Rider Assigned</option>
-                    <option value="Out for Delivery">Out for Delivery</option>
-                    <option value="Delivered">Delivered</option>
-                    <option value="Cancelled">Cancelled</option>
-                </select>
-                
-                <button onclick="if(confirm('Delete Order?')) deleteDoc(doc(db,'orders','${o.id}'))" class="bg-red-50 text-red-500 px-4 py-2 rounded-xl hover:bg-red-500 hover:text-white transition"><i class="fas fa-trash text-xs"></i></button>
-            </div>
-        </div>`;
-    }).join('') || '<div class="text-center py-10 opacity-40"><i class="fas fa-receipt text-4xl mb-3"></i><p class="font-bold text-sm">No orders found</p></div>';
-};
-
-function renderReqs() {
-    let totalReq = reqs.length + riderReqs.length;
-    document.getElementById('reqBadge').innerText = totalReq;
-    document.getElementById('reqBadge').classList.toggle('hidden', totalReq === 0);
-
-    document.getElementById('shopReqList').innerHTML = reqs.map(r => `
-        <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex justify-between items-center">
-            <div><p class="font-black text-sm">${r.shopName}</p><p class="text-[10px] font-bold text-slate-500">${r.phone}</p></div>
-            <div class="flex gap-2">
-                <button onclick="approveShop('${r.id}')" class="w-8 h-8 bg-green-500 text-white rounded-lg flex items-center justify-center"><i class="fas fa-check"></i></button>
-                <button onclick="deleteDoc(doc(db,'shop_requests','${r.id}'))" class="w-8 h-8 bg-red-100 text-red-500 rounded-lg flex items-center justify-center"><i class="fas fa-times"></i></button>
-            </div>
-        </div>`).join('') || '<p class="text-xs text-slate-400 py-2">No pending shop requests</p>';
-        
-    document.getElementById('riderReqList').innerHTML = riderReqs.map(r => `
-        <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex justify-between items-center">
-            <div><p class="font-black text-sm">${r.name}</p><p class="text-[10px] font-bold text-slate-500">${r.phone}</p></div>
-            <div class="flex gap-2">
-                <button onclick="approveRider('${r.id}')" class="w-8 h-8 bg-green-500 text-white rounded-lg flex items-center justify-center"><i class="fas fa-check"></i></button>
-                <button onclick="deleteDoc(doc(db,'rider_requests','${r.id}'))" class="w-8 h-8 bg-red-100 text-red-500 rounded-lg flex items-center justify-center"><i class="fas fa-times"></i></button>
-            </div>
-        </div>`).join('') || '<p class="text-xs text-slate-400 py-2">No pending rider requests</p>';
+function renderActivity(){
+  document.getElementById('recentActivity').innerHTML=orders.slice(0,7).map(o=>`
+    <div class="flex justify-between items-center py-2 border-b border-slate-50 last:border-0">
+      <div>
+        <span class="font-bold text-sm">#${o.id.substr(0,5).toUpperCase()}</span>
+        <span class="text-xs text-slate-400 ml-2">${o.customer?.name||'N/A'}</span>
+      </div>
+      <div class="text-right">
+        <p class="text-xs font-black text-slate-700">₹${o.total}</p>
+        <p class="text-[9px] text-slate-400">${o.status}</p>
+      </div>
+    </div>`).join('')||'<p class="text-xs text-slate-400 text-center py-4">No orders</p>';
 }
 
-// === ACTIONS & EDITS ===
+function renderTopShops(){
+  let shopRev={};
+  orders.filter(o=>o.status==='Delivered').forEach(o=>{shopRev[o.shopId]=(shopRev[o.shopId]||0)+(parseInt(o.total)||0);});
+  let sorted=Object.entries(shopRev).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  document.getElementById('topShops').innerHTML=sorted.map(([sid,rev])=>{
+    let s=shops.find(x=>x.id===sid);
+    return `<div class="flex justify-between items-center py-2 border-b border-slate-50 last:border-0">
+      <span class="font-bold text-sm">${s?.shopName||'Shop'}</span>
+      <span class="font-black text-green-600">₹${rev}</span>
+    </div>`;
+  }).join('')||'<p class="text-xs text-slate-400 text-center py-4">No data</p>';
+}
 
-window.approveShop = async (id) => {
-    let r = reqs.find(x => x.id == id);
-    if (!r) return;
-    await addDoc(collection(db, "shops"), { shopName: r.shopName, phone: r.phone, location: r.location, bio: r.bio || '', pass: '123456', isOpen: false, emoji: '🏪', isBlocked: false, timestamp: Date.now() });
-    await deleteDoc(doc(db, "shop_requests", id));
-    alert('✅ Shop approved! Default password: 123456');
-};
+// ===================== APPROVALS =====================
+function renderApprovals(){
+  let total=reqs.length+riderReqs.length;
+  document.getElementById('reqBadge').innerText=total;
+  document.getElementById('reqBadge').classList.toggle('hidden',total===0);
 
-window.approveRider = async (id) => {
-    let r = riderReqs.find(x => x.id == id);
-    if (!r) return;
-    await addDoc(collection(db, "riders"), { name: r.name, phone: r.phone, pass: r.pass, vehicle: r.vehicle || 'Motorcycle', isOnline: false, isBlocked: false, timestamp: Date.now() });
-    await deleteDoc(doc(db, "rider_requests", id));
-    alert('✅ Rider approved!');
-};
+  document.getElementById('shopReqList').innerHTML=reqs.map(r=>`
+    <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
+      <h4 class="font-black">${r.shopName}</h4>
+      <p class="text-xs text-slate-500">${r.phone}</p>
+      <p class="text-[10px] text-slate-400 mt-1">${r.location||'No location'}</p>
+      <div class="flex gap-2 mt-3">
+        <button onclick="approveShop('${r.id}')" class="flex-1 bg-green-500 text-white px-3 py-2 rounded-xl text-xs font-bold hover:bg-green-600 transition"><i class="fas fa-check mr-1"></i>Approve</button>
+        <button onclick="delShopReq('${r.id}')" class="flex-1 bg-red-50 text-red-500 px-3 py-2 rounded-xl text-xs font-bold hover:bg-red-100 transition"><i class="fas fa-times mr-1"></i>Reject</button>
+      </div>
+    </div>`).join('')||'<p class="text-xs text-slate-400 text-center py-6 bg-white rounded-2xl border border-slate-100">No pending shop requests</p>';
 
-// Shop Edit
-window.openShopEdit = id => {
-    let s = shops.find(x=>x.id===id);
-    document.getElementById('esId').value = s.id; 
-    document.getElementById('esName').value = s.shopName || ''; 
-    document.getElementById('esPhone').value = s.phone || ''; 
-    document.getElementById('esPass').value = s.pass || ''; 
-    document.getElementById('esLoc').value = s.location || ''; 
-    document.getElementById('esBlock').checked = s.isBlocked || false;
-    document.getElementById('editShopModal').classList.remove('hidden');
-};
-window.saveShopEdit = async () => {
-    await updateDoc(doc(db, 'shops', document.getElementById('esId').value), { 
-        shopName: document.getElementById('esName').value, 
-        phone: document.getElementById('esPhone').value, 
-        pass: document.getElementById('esPass').value, 
-        location: document.getElementById('esLoc').value, 
-        isBlocked: document.getElementById('esBlock').checked 
-    });
-    document.getElementById('editShopModal').classList.add('hidden');
-    alert('✅ Shop details updated');
-};
+  document.getElementById('riderReqList').innerHTML=riderReqs.map(r=>`
+    <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
+      <h4 class="font-black">${r.name}</h4>
+      <p class="text-xs text-slate-500">${r.phone} • ${r.vehicle}</p>
+      <div class="flex gap-2 mt-3">
+        <button onclick="approveRider('${r.id}')" class="flex-1 bg-green-500 text-white px-3 py-2 rounded-xl text-xs font-bold hover:bg-green-600 transition"><i class="fas fa-check mr-1"></i>Approve</button>
+        <button onclick="delRiderReq('${r.id}')" class="flex-1 bg-red-50 text-red-500 px-3 py-2 rounded-xl text-xs font-bold hover:bg-red-100 transition"><i class="fas fa-times mr-1"></i>Reject</button>
+      </div>
+    </div>`).join('')||'<p class="text-xs text-slate-400 text-center py-6 bg-white rounded-2xl border border-slate-100">No pending rider requests</p>';
+}
 
-// Rider Edit
-window.openRiderEdit = id => {
-    let r = riders.find(x=>x.id===id);
-    document.getElementById('erId').value = r.id; 
-    document.getElementById('erName').value = r.name || ''; 
-    document.getElementById('erPhone').value = r.phone || ''; 
-    document.getElementById('erPass').value = r.pass || ''; 
-    document.getElementById('erBlock').checked = r.isBlocked || false;
-    document.getElementById('editRiderModal').classList.remove('hidden');
-};
-window.saveRiderEdit = async () => {
-    await updateDoc(doc(db, 'riders', document.getElementById('erId').value), { 
-        name: document.getElementById('erName').value, 
-        phone: document.getElementById('erPhone').value, 
-        pass: document.getElementById('erPass').value, 
-        isBlocked: document.getElementById('erBlock').checked 
-    });
-    document.getElementById('editRiderModal').classList.add('hidden');
-    alert('✅ Rider details updated');
-};
-
-// ================== RIDER DASHBOARD & COD SETTLE ==================
-window.openRiderDash = id => {
-    let r = riders.find(x=>x.id===id);
-    let rOrders = orders.filter(o => o.riderPhone === r.phone && o.status === 'Delivered');
-    
-    document.getElementById('rdAvatar').innerText = r.name[0].toUpperCase();
-    document.getElementById('rdName').innerText = r.name;
-    document.getElementById('rdPhone').innerText = r.phone;
-    
-    document.getElementById('rdCount').innerText = rOrders.length;
-    
-    let defaultFee = parseInt(globalSet.fee) || 20;
-    document.getElementById('rdEarn').innerText = '₹' + rOrders.reduce((a,b) => a + (parseInt(b.deliveryFee) || defaultFee), 0);
-    
-    // COD Logic (Exclude settled orders)
-    let pendingCodOrders = rOrders.filter(o => o.paymentMethod !== 'UPI' && !o.codSettled);
-    let codAmount = pendingCodOrders.reduce((a,b) => a + (parseInt(b.total) || 0), 0);
-    
-    document.getElementById('rdCod').innerText = '₹' + codAmount;
-    
-    // Settle Button Logic
-    let settleBtn = document.getElementById('settleCodBtn');
-    if(codAmount > 0) {
-        settleBtn.classList.remove('hidden');
-        settleBtn.onclick = () => window.settleRiderCOD(r.phone, pendingCodOrders, codAmount);
-    } else {
-        settleBtn.classList.add('hidden');
-    }
-    
-    document.getElementById('rdUpi').innerText = '₹' + rOrders.filter(o => o.paymentMethod === 'UPI').reduce((a,b) => a + (parseInt(b.total) || 0), 0);
-    
-    document.getElementById('riderDashModal').classList.remove('hidden');
+// ===================== SHOPS =====================
+window.renderShops=function(){
+  let s=(document.getElementById('shopSearch')?.value||'').toLowerCase();
+  document.getElementById('shopList').innerHTML=shops.filter(x=>(x.shopName||'').toLowerCase().includes(s)||(x.phone||'').includes(s)).map(sh=>{
+    let shopRev=orders.filter(o=>o.shopId===sh.id&&o.status==='Delivered').reduce((a,b)=>a+(parseInt(b.total)||0),0);
+    let commRate=sh.commissionRate||globalSettings.commissionRate||20;
+    let comm=Math.round(shopRev*commRate/100);
+    return `
+    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 relative">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-12 h-12 bg-orange-50 rounded-2xl flex items-center justify-center text-2xl">${sh.emoji||'🏪'}</div>
+        <div class="flex-1 min-w-0">
+          <h4 class="font-black truncate">${sh.shopName}</h4>
+          <p class="text-xs text-slate-500">${sh.phone}</p>
+          <div class="flex items-center gap-2 mt-0.5">
+            <span class="text-[9px] font-bold px-2 py-0.5 rounded-full ${sh.isOpen?'bg-green-100 text-green-600':'bg-slate-100 text-slate-400'}">${sh.isOpen?'● OPEN':'CLOSED'}</span>
+            ${sh.isBlocked?'<span class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-600">BLOCKED</span>':''}
+          </div>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-2 mb-3">
+        <div class="bg-green-50 p-2 rounded-xl text-center"><p class="text-[9px] font-bold text-green-500">Revenue</p><p class="font-black text-green-700 text-sm">₹${shopRev}</p></div>
+        <div class="bg-purple-50 p-2 rounded-xl text-center"><p class="text-[9px] font-bold text-purple-500">Commission ${commRate}%</p><p class="font-black text-purple-700 text-sm">₹${comm}</p></div>
+      </div>
+      ${sh.location?`<a href="https://www.google.com/maps?q=${sh.location}" target="_blank" class="block text-center text-[10px] font-bold text-blue-500 hover:underline mb-3"><i class="fas fa-map-location-dot mr-1"></i>${sh.location}</a>`:''}
+      <div class="flex gap-2">
+        <button onclick="openEditShop('${sh.id}')" class="flex-1 bg-blue-50 text-blue-600 py-2 rounded-xl text-xs font-bold hover:bg-blue-100 transition"><i class="fas fa-pen mr-1"></i>Edit</button>
+        <button onclick="toggleBlock('shops','${sh.id}',${sh.isBlocked||false})" class="flex-1 ${sh.isBlocked?'bg-green-50 text-green-600':'bg-orange-50 text-orange-600'} py-2 rounded-xl text-xs font-bold hover:opacity-80 transition">${sh.isBlocked?'Unblock':'Block'}</button>
+        <button onclick="delShop('${sh.id}')" class="w-9 h-9 bg-red-50 text-red-500 rounded-xl flex items-center justify-center hover:bg-red-500 hover:text-white transition"><i class="fas fa-trash text-xs"></i></button>
+      </div>
+    </div>`;
+  }).join('')||'<p class="col-span-3 text-xs text-slate-400 text-center py-8">No shops yet</p>';
 };
 
-window.settleRiderCOD = async (phone, codOrders, amount) => {
-    if(confirm(`Are you sure you want to Settle ₹${amount} cash collected by this rider?\n\nThis will reset their "Cash in Hand" to ₹0.`)) {
-        let btn = document.getElementById('settleCodBtn');
-        btn.innerHTML = "SETTLING...";
-        btn.disabled = true;
-        
-        try {
-            // Update all these orders to mark codSettled: true
-            let promises = codOrders.map(o => updateDoc(doc(db, "orders", o.id), { codSettled: true }));
-            await Promise.all(promises);
-            
-            alert(`✅ Successfully settled ₹${amount}`);
-            document.getElementById('riderDashModal').classList.add('hidden');
-        } catch(e) {
-            alert("Error settling COD. Please check internet connection.");
-        }
-        
-        btn.innerHTML = "SETTLE";
-        btn.disabled = false;
-    }
+// ===================== RIDERS =====================
+function renderRiders(){
+  let s=(document.getElementById('riderSearch')?.value||'').toLowerCase();
+  document.getElementById('riderList').innerHTML=riders.filter(r=>(r.name||'').toLowerCase().includes(s)||(r.phone||'').includes(s)).map(r=>{
+    let rOrders=orders.filter(o=>o.riderPhone===r.phone&&o.status==='Delivered');
+    let cashHand=rOrders.filter(o=>(o.paymentMethod==='Cash'||o.paymentMethod==='COD')&&!o.adminCollected).reduce((a,b)=>a+(parseInt(b.total)||0),0);
+    let totalEarn=rOrders.reduce((a,b)=>a+(parseInt(b.deliveryFee)||40),0);
+    let upiCount=rOrders.filter(o=>o.paymentMethod==='UPI').length;
+    let codCount=rOrders.filter(o=>o.paymentMethod!=='UPI').length;
+    return `
+    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 relative ${r.isBlocked?'border-red-200 bg-red-50/30':''}">
+      <div class="flex items-start gap-3 mb-3">
+        <div class="w-11 h-11 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 font-black text-xl flex-shrink-0">${r.name?.[0]||'?'}</div>
+        <div class="flex-1 min-w-0">
+          <h4 class="font-black truncate">${r.name}</h4>
+          <p class="text-xs text-slate-500">${r.phone}</p>
+          <div class="flex gap-2 mt-0.5 flex-wrap">
+            <span class="text-[9px] font-bold px-2 py-0.5 rounded-full ${r.isOnline?'bg-green-100 text-green-600':'bg-slate-100 text-slate-400'}">${r.isOnline?'● ONLINE':'OFFLINE'}</span>
+            ${r.isBlocked?'<span class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-600">BLOCKED</span>':''}
+          </div>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-2 mb-3">
+        <div class="bg-slate-50 p-2 rounded-xl text-center"><p class="text-[9px] text-slate-400 font-bold">Deliveries</p><p class="font-black text-slate-800">${rOrders.length}</p></div>
+        <div class="bg-green-50 p-2 rounded-xl text-center"><p class="text-[9px] text-green-500 font-bold">Earned</p><p class="font-black text-green-700">₹${totalEarn}</p></div>
+        <div class="bg-orange-50 p-2 rounded-xl text-center"><p class="text-[9px] text-orange-500 font-bold">COD Orders</p><p class="font-black text-orange-700">${codCount}</p></div>
+        <div class="bg-blue-50 p-2 rounded-xl text-center"><p class="text-[9px] text-blue-500 font-bold">UPI Orders</p><p class="font-black text-blue-700">${upiCount}</p></div>
+      </div>
+      ${cashHand>0?`<div class="bg-amber-50 p-2.5 rounded-xl flex justify-between items-center mb-3 border border-amber-100"><span class="text-xs font-bold text-amber-700">Cash in Hand</span><span class="font-black text-amber-800">₹${cashHand}</span></div>`:''}
+      <div class="flex gap-2">
+        <button onclick="openRiderDash('${r.id}')" class="flex-1 bg-slate-900 text-white py-2 rounded-xl text-xs font-black hover:bg-black transition"><i class="fas fa-chart-bar mr-1"></i>Dashboard</button>
+        <button onclick="openEditRider('${r.id}')" class="flex-1 bg-blue-50 text-blue-600 py-2 rounded-xl text-xs font-bold hover:bg-blue-100 transition"><i class="fas fa-pen mr-1"></i>Edit</button>
+        ${cashHand>0?`<button onclick="openSettle('${r.name}','${r.phone}',${cashHand})" class="flex-1 bg-green-600 text-white py-2 rounded-xl text-xs font-black hover:bg-green-700 transition"><i class="fas fa-money-bill mr-1"></i>Settle</button>`:''}
+        <button onclick="toggleBlock('riders','${r.id}',${r.isBlocked||false})" class="w-9 h-9 ${r.isBlocked?'bg-green-50 text-green-600':'bg-red-50 text-red-500'} rounded-xl flex items-center justify-center hover:opacity-80 transition"><i class="fas ${r.isBlocked?'fa-unlock':'fa-ban'} text-xs"></i></button>
+      </div>
+    </div>`;
+  }).join('')||'<p class="col-span-3 text-xs text-slate-400 text-center py-8">No riders yet</p>';
+}
+
+// ===================== ORDERS =====================
+function renderOrdersFiltered(){
+  let search=(document.getElementById('ordSearch')?.value||'').toLowerCase();
+  let list=orders.filter(o=>{
+    let matchFilter=currentOrdFilter==='All'||o.status===currentOrdFilter;
+    let matchSearch=!search||o.id.toLowerCase().includes(search)||o.customer?.name?.toLowerCase().includes(search)||o.customer?.phone?.includes(search);
+    return matchFilter&&matchSearch;
+  });
+  renderOrderList(list);
+}
+window.renderOrdersFiltered=renderOrdersFiltered;
+
+function renderOrderList(list){
+  let el=document.getElementById('ordList');
+  if(!list.length){el.innerHTML='<div class="text-center py-12 text-slate-400"><i class="fas fa-receipt text-4xl mb-3"></i><p class="font-bold">No orders found</p></div>';return;}
+  let sc={Pending:'text-red-500 animate-pulse',Preparing:'text-blue-500','Ready for Pickup':'text-purple-500','Rider Assigned':'text-indigo-500','Out for Delivery':'text-orange-500',Arrived:'text-cyan-500',Delivered:'text-green-500',Cancelled:'text-slate-400'};
+  el.innerHTML=list.map(o=>`
+    <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 mb-1 flex-wrap">
+            <span class="bg-slate-100 px-2 py-0.5 rounded text-[10px] font-black">#${o.id.substr(0,6).toUpperCase()}</span>
+            <span class="text-xs font-black ${sc[o.status]||'text-slate-500'}">${o.status}</span>
+            <span class="text-[9px] text-slate-400">${new Date(o.timestamp).toLocaleString('en-IN')}</span>
+            ${o.paymentMethod==='UPI'?`<span class="text-[9px] font-black px-2 py-0.5 rounded-full ${o.upiVerified?'bg-green-100 text-green-600':'bg-yellow-100 text-yellow-600'}">${o.upiVerified?'✓ UPI OK':'⚠ UPI Pending'}</span>`:'<span class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-600">COD</span>'}
+          </div>
+          <p class="font-black text-sm">₹${o.total} • ${o.customer?.name||'N/A'}</p>
+          <p class="text-xs text-slate-400">${o.customer?.phone||''} • Rider: ${o.riderName||'<span class="text-red-400">Unassigned</span>'}</p>
+          <p class="text-[10px] text-slate-400 mt-0.5 truncate">${o.customer?.addr||''}</p>
+          ${o.utr?`<p class="text-[9px] text-blue-500 font-bold mt-0.5">UTR: ${o.utr}</p>`:''}
+        </div>
+        <div class="flex flex-wrap gap-2">
+          ${!o.riderName&&o.status!=='Delivered'&&o.status!=='Cancelled'?`<button onclick="openAssign('${o.id}')" class="bg-orange-500 text-white px-3 py-2 rounded-xl text-xs font-bold shadow hover:bg-orange-600 transition"><i class="fas fa-motorcycle mr-1"></i>Assign</button>`:''}
+          ${o.status!=='Delivered'&&o.status!=='Cancelled'?`<select onchange="updateOrderStatus('${o.id}',this.value);this.value=''" class="bg-white border border-slate-200 px-2 py-2 rounded-xl text-xs font-bold outline-none"><option value="">Change</option><option>Pending</option><option>Preparing</option><option>Ready for Pickup</option><option>Rider Assigned</option><option>Out for Delivery</option><option>Arrived</option><option>Delivered</option><option>Cancelled</option></select>`:''}
+          <button onclick="deleteOrder('${o.id}')" class="bg-red-50 text-red-500 px-3 py-2 rounded-xl text-xs font-bold hover:bg-red-100 transition"><i class="fas fa-trash"></i></button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+// ===================== UPI VERIFY =====================
+function renderUpiView(){
+  let upiOrders=orders.filter(o=>o.paymentMethod==='UPI');
+  let pending=upiOrders.filter(o=>!o.upiVerified&&o.status!=='Cancelled');
+  let verified=upiOrders.filter(o=>o.upiVerified);
+  document.getElementById('upiPendBadge').innerText=pending.length;
+  document.getElementById('upiPendBadge').classList.toggle('hidden',pending.length===0);
+
+  document.getElementById('upiPendingList').innerHTML=pending.map(o=>`
+    <div class="bg-white p-4 rounded-2xl border-2 border-yellow-200 shadow-sm">
+      <div class="flex justify-between items-start mb-2">
+        <div><span class="text-[10px] font-black text-slate-400">#${o.id.substr(0,6).toUpperCase()}</span><p class="font-black">${o.customer?.name}</p><p class="text-xs text-slate-500">${o.customer?.phone}</p></div>
+        <div class="text-right"><p class="text-xl font-black text-slate-900">₹${o.total}</p><p class="text-[9px] text-slate-400">UPI</p></div>
+      </div>
+      ${o.utr?`<div class="bg-blue-50 p-2 rounded-xl mb-3 border border-blue-100"><p class="text-[9px] font-black text-blue-500 uppercase">UTR / Transaction ID</p><p class="font-black text-blue-800 text-sm">${o.utr}</p></div>`:'<div class="bg-red-50 p-2 rounded-xl mb-3 border border-red-100"><p class="text-[10px] font-bold text-red-500">⚠ No UTR provided by customer</p></div>'}
+      <div class="flex gap-2">
+        <button onclick="verifyUpi('${o.id}',true)" class="flex-1 bg-green-500 text-white py-2.5 rounded-xl text-xs font-black hover:bg-green-600 transition"><i class="fas fa-check mr-1"></i>APPROVE — Don't Collect Cash</button>
+        <button onclick="verifyUpi('${o.id}',false)" class="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-xs font-black hover:bg-red-600 transition"><i class="fas fa-times mr-1"></i>REJECT — Collect Cash</button>
+      </div>
+    </div>`).join('')||'<p class="text-xs text-slate-400 text-center py-6 bg-white rounded-2xl border border-slate-100">No pending UPI payments</p>';
+
+  document.getElementById('upiVerifiedList').innerHTML=verified.slice(0,10).map(o=>`
+    <div class="bg-white p-3 rounded-2xl border border-green-100 shadow-sm">
+      <div class="flex justify-between items-center">
+        <div><span class="text-[9px] font-black text-slate-400">#${o.id.substr(0,6).toUpperCase()}</span><p class="font-bold text-sm">${o.customer?.name}</p>${o.utr?`<p class="text-[9px] text-blue-500">UTR: ${o.utr}</p>`:''}</div>
+        <div class="text-right"><p class="font-black text-green-600">₹${o.total}</p><span class="text-[9px] font-black text-green-500 bg-green-50 px-2 py-0.5 rounded-full">✓ Verified</span></div>
+      </div>
+    </div>`).join('')||'<p class="text-xs text-slate-400 text-center py-6 bg-white rounded-2xl border border-slate-100">No verified payments yet</p>';
+}
+
+window.verifyUpi=async(oid,approve)=>{
+  if(approve){
+    await updateDoc(doc(db,'orders',oid),{upiVerified:true,upiApproved:true,paymentApproved:true});
+    alert('✅ UPI Approved! Rider will be notified not to collect cash.');
+  } else {
+    await updateDoc(doc(db,'orders',oid),{upiVerified:true,upiApproved:false,paymentMethod:'COD',paymentNote:'UPI rejected - collect cash'});
+    alert('❌ UPI Rejected. Rider will collect cash from customer.');
+  }
 };
 
-// UPI Approval Logic
-window.approveUPI = async (id) => {
-    if(confirm("Confirm you have received the UTR amount in your bank? \n\nClicking OK will verify this payment so the rider doesn't collect cash.")) {
-        await updateDoc(doc(db, "orders", id), { paymentApproved: true });
-    }
+// ===================== COMMISSION =====================
+function renderCommissionView(){
+  document.getElementById('commissionByShop').innerHTML=shops.map(sh=>{
+    let rev=orders.filter(o=>o.shopId===sh.id&&o.status==='Delivered').reduce((a,b)=>a+(parseInt(b.total)||0),0);
+    let rate=sh.commissionRate||globalSettings.commissionRate||20;
+    let comm=Math.round(rev*rate/100);
+    return `<div class="flex justify-between items-center py-2 border-b border-slate-100 last:border-0">
+      <div><p class="font-bold text-sm">${sh.shopName}</p><p class="text-[9px] text-slate-400">Commission: ${rate}% on ₹${rev}</p></div>
+      <p class="font-black text-purple-600">₹${comm}</p>
+    </div>`;
+  }).join('')||'<p class="text-xs text-slate-400 text-center py-4">No shops yet</p>';
+}
+
+window.saveCommission=async()=>{
+  let rate=document.getElementById('setComm').value;
+  if(!rate) return;
+  await setDoc(doc(db,'settings','global'),{commissionRate:parseInt(rate)},{merge:true});
+  document.getElementById('commRate').innerText=rate;
+  alert('✅ Commission rate updated!');
 };
 
-// Create Shop/Rider directly
-window.createShop = async () => {
-    let name = document.getElementById('nsName').value.trim();
-    let phone = document.getElementById('nsPhone').value.trim();
-    let pass = document.getElementById('nsPass').value.trim();
-    if (!name || !phone || !pass) return alert("Fill all fields");
-    await addDoc(collection(db, "shops"), { shopName: name, phone, pass, location: '', emoji: '🏪', isOpen: false, isBlocked: false, timestamp: Date.now() });
-    document.getElementById('addShopModal').classList.add('hidden');
-    alert('✅ Shop created!');
-};
-window.createRider = async () => {
-    let name = document.getElementById('nrName').value.trim();
-    let phone = document.getElementById('nrPhone').value.trim();
-    let pass = document.getElementById('nrPass').value.trim();
-    if (!name || !phone || !pass) return alert("Fill all fields");
-    await addDoc(collection(db, "riders"), { name, phone, pass, vehicle: 'Motorcycle', isOnline: false, isBlocked: false, timestamp: Date.now() });
-    document.getElementById('addRiderModal').classList.add('hidden');
-    alert('✅ Rider added!');
+// ===================== DELIVERY CONFIG =====================
+window.saveDeliveryConfig=async()=>{
+  await setDoc(doc(db,'settings','global'),{
+    baseKmFee:parseInt(document.getElementById('baseKm').value)||20,
+    perKmFee:parseInt(document.getElementById('perKm').value)||5,
+    surgeActive:document.getElementById('surgeToggle').checked,
+    surgeAmt:parseInt(document.getElementById('surgeAmt').value)||10,
+    surgeReason:document.getElementById('surgeReason').value||'Peak Hours'
+  },{merge:true});
+  alert('✅ Delivery config saved!');
 };
 
-// === DANGER ZONE (WIPE DATA) ===
-window.wipeData = async () => {
-    let promptWord = prompt("DANGER: Type 'DELETE ALL' exactly to clear entire database permanently.");
-    if(promptWord === "DELETE ALL") {
-        alert("Wipe initiated. DO NOT close or refresh this window until completed.");
-        try {
-            for(let c of ["orders", "products", "shops", "riders", "shop_requests", "rider_requests", "offers"]) {
-                let snap = await getDocs(collection(db, c));
-                let deletePromises = [];
-                snap.forEach(d => {
-                    deletePromises.push(deleteDoc(d.ref));
-                });
-                await Promise.all(deletePromises);
-            }
-            alert("✅ Database wiped completely and successfully.");
-            location.reload();
-        } catch (e) {
-            alert("Error during wipe: " + e.message);
-        }
-    } else if(promptWord !== null) {
-        alert("Wipe cancelled. Incorrect confirmation phrase.");
-    }
+window.previewFee=()=>{
+  let km=parseFloat(document.getElementById('previewKm').value)||0;
+  let base=parseInt(document.getElementById('baseKm').value)||20;
+  let perKm=parseInt(document.getElementById('perKm').value)||5;
+  let surge=document.getElementById('surgeToggle').checked?parseInt(document.getElementById('surgeAmt').value)||0:0;
+  let fee=km<=2?base:base+(km-2)*perKm;
+  fee=Math.round(fee+surge);
+  document.getElementById('feePreview').innerText=`₹${fee}`;
 };
 
-// === SETTINGS ===
-document.getElementById('saveSetBtn').onclick = async () => {
-    let btn = document.getElementById('saveSetBtn');
-    btn.innerHTML = '<span class="spinner"></span> Saving...';
-    
-    await setDoc(doc(db, "settings", "global"), { 
-        appname: document.getElementById('setAppName').value.trim(), 
-        logo: document.getElementById('setLogo').value.trim(), 
-        wa: document.getElementById('setWa').value.trim(), 
-        upi: document.getElementById('setUpi').value.trim(), 
-        fee: document.getElementById('setFee').value, 
-        perkm: document.getElementById('setPerKm').value, 
-        surge: document.getElementById('setSurge').value, 
-        comm: document.getElementById('setComm').value 
-    }, { merge: true });
-    
-    btn.innerHTML = 'UPDATE SETTINGS';
-    alert("✅ Global settings updated globally!");
+// ===================== RIDER DASHBOARD =====================
+window.openRiderDash=(rid)=>{
+  let r=riders.find(x=>x.id===rid);
+  if(!r) return;
+  document.getElementById('rdName').innerText=r.name+' Dashboard';
+  let rOrders=orders.filter(o=>o.riderPhone===r.phone&&o.status==='Delivered');
+  let earn=rOrders.reduce((a,b)=>a+(parseInt(b.deliveryFee)||40),0);
+  let cod=rOrders.filter(o=>o.paymentMethod!=='UPI');
+  let upi=rOrders.filter(o=>o.paymentMethod==='UPI');
+  document.getElementById('rdEarn').innerText=earn;
+  document.getElementById('rdDel').innerText=rOrders.length;
+  document.getElementById('rdCod').innerText=cod.reduce((a,b)=>a+(parseInt(b.total)||0),0);
+  document.getElementById('rdUpi').innerText=upi.length;
+  document.getElementById('rdOrderList').innerHTML=rOrders.slice(0,15).map(o=>`
+    <div class="flex justify-between py-1.5 border-b border-slate-50 last:border-0">
+      <div><span class="text-[10px] font-black">#${o.id.substr(0,5).toUpperCase()}</span><span class="text-[10px] text-slate-400 ml-1">${o.customer?.name}</span></div>
+      <div class="text-right"><span class="text-[10px] font-black text-slate-700">₹${o.total}</span><span class="text-[9px] ${o.paymentMethod==='UPI'?'text-green-500':'text-orange-500'} ml-1">${o.paymentMethod}</span></div>
+    </div>`).join('')||'<p class="text-xs text-slate-400 text-center py-3">No deliveries yet</p>';
+  openModal('riderDashModal');
 };
 
-document.getElementById('changePinBtn').onclick = async () => {
-    let oldPin = document.getElementById('oldPin').value;
-    let newPin = document.getElementById('newPin').value;
-    if (!oldPin || !newPin || newPin.length < 4) return alert("Enter valid PINs (min 4 digits)");
-    
-    let docSnap = await getDoc(doc(db, "settings", "security"));
-    let realPin = (docSnap.exists() && docSnap.data().adminPin) ? docSnap.data().adminPin : "1234";
-    
-    if (oldPin !== realPin) return alert("Incorrect current PIN");
-    
-    await setDoc(doc(db, "settings", "security"), { adminPin: newPin }, { merge: true });
-    alert('✅ Admin PIN changed successfully!');
-    document.getElementById('oldPin').value = '';
-    document.getElementById('newPin').value = '';
+// ===================== ACTIONS =====================
+window.approveShop=async(id)=>{
+  let r=reqs.find(x=>x.id===id);
+  if(!r) return;
+  await addDoc(collection(db,'shops'),{shopName:r.shopName,phone:r.phone,location:r.location,bio:r.bio||'',pass:'123456',isOpen:false,emoji:'🏪',commissionRate:globalSettings.commissionRate||20,timestamp:Date.now()});
+  await deleteDoc(doc(db,'shop_requests',id));
+  alert('✅ Shop approved! Default password: 123456');
+};
+window.delShopReq=async(id)=>{if(confirm('Reject?'))await deleteDoc(doc(db,'shop_requests',id));};
+window.approveRider=async(id)=>{
+  let r=riderReqs.find(x=>x.id===id);
+  if(!r) return;
+  await addDoc(collection(db,'riders'),{name:r.name,phone:r.phone,pass:r.pass,vehicle:r.vehicle||'Motorcycle',isOnline:false,isBlocked:false,timestamp:Date.now()});
+  await deleteDoc(doc(db,'rider_requests',id));
+  alert('✅ Rider approved!');
+};
+window.delRiderReq=async(id)=>{if(confirm('Reject?'))await deleteDoc(doc(db,'rider_requests',id));};
+window.delShop=async(id)=>{if(confirm('Delete this shop permanently?'))await deleteDoc(doc(db,'shops',id));};
+window.toggleBlock=async(col,id,current)=>{await updateDoc(doc(db,col,id),{isBlocked:!current});};
+
+window.openEditShop=(id)=>{
+  let s=shops.find(x=>x.id===id);
+  if(!s) return;
+  document.getElementById('editShopId').value=id;
+  document.getElementById('esName').value=s.shopName||'';
+  document.getElementById('esPhone').value=s.phone||'';
+  document.getElementById('esPass').value='';
+  document.getElementById('esLoc').value=s.location||'';
+  document.getElementById('esEmoji').value=s.emoji||'';
+  document.getElementById('esComm').value=s.commissionRate||globalSettings.commissionRate||20;
+  openModal('editShopModal');
+};
+window.saveShopEdit=async()=>{
+  let id=document.getElementById('editShopId').value;
+  let data={shopName:document.getElementById('esName').value,phone:document.getElementById('esPhone').value,location:document.getElementById('esLoc').value,emoji:document.getElementById('esEmoji').value,commissionRate:parseInt(document.getElementById('esComm').value)||20};
+  let newPass=document.getElementById('esPass').value;
+  if(newPass) data.pass=newPass;
+  await updateDoc(doc(db,'shops',id),data);
+  closeModal('editShopModal');
+  alert('✅ Shop updated!');
 };
 
-// === UI UTILS ===
-window.view = (v) => {
-    ['dash', 'req', 'shops', 'riders', 'ord', 'set'].forEach(t => { 
-        document.getElementById('view-'+t)?.classList.add('hidden'); 
-        document.getElementById('nav-'+t)?.classList.remove('active'); 
-    });
-    document.getElementById('view-'+v)?.classList.remove('hidden'); 
-    document.getElementById('nav-'+v)?.classList.add('active');
-    
-    if(window.innerWidth < 768) document.getElementById('sidebarPanel').classList.remove('open');
+window.openEditRider=(id)=>{
+  let r=riders.find(x=>x.id===id);
+  if(!r) return;
+  document.getElementById('editRiderId').value=id;
+  document.getElementById('erName').value=r.name||'';
+  document.getElementById('erPhone').value=r.phone||'';
+  document.getElementById('erPass').value='';
+  document.getElementById('erVeh').value=r.vehicle||'Motorcycle';
+  document.getElementById('erBlocked').checked=r.isBlocked||false;
+  openModal('editRiderModal');
+};
+window.saveRiderEdit=async()=>{
+  let id=document.getElementById('editRiderId').value;
+  let data={name:document.getElementById('erName').value,phone:document.getElementById('erPhone').value,vehicle:document.getElementById('erVeh').value,isBlocked:document.getElementById('erBlocked').checked};
+  let np=document.getElementById('erPass').value;
+  if(np) data.pass=np;
+  await updateDoc(doc(db,'riders',id),data);
+  closeModal('editRiderModal');
+  alert('✅ Rider updated!');
 };
 
-window.filterOrd = (s) => {
-    document.querySelectorAll('[id^="filt-"]').forEach(el => el.className = "bg-white border border-slate-200 text-slate-600 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap");
-    let activeBtnId = 'filt-' + (s === 'Rider Assigned' ? 'Assigned' : s);
-    let activeBtn = document.getElementById(activeBtnId);
-    if(activeBtn) activeBtn.className = "bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap";
-    
-    renderOrd();
+window.openSettle=(name,phone,amount)=>{
+  document.getElementById('stRiderName').innerText=name;
+  document.getElementById('stAmount').innerText=amount;
+  openModal('settleModal');
+  document.getElementById('confirmSettleBtn').onclick=async()=>{
+    if(!confirm(`Collect ₹${amount} from ${name}?`)) return;
+    let p=orders.filter(o=>o.riderPhone===phone&&o.status==='Delivered'&&(o.paymentMethod==='Cash'||o.paymentMethod==='COD')&&!o.adminCollected);
+    for(let o of p) await updateDoc(doc(db,'orders',o.id),{adminCollected:true});
+    closeModal('settleModal');alert('✅ Cash settled!');
+  };
 };
 
-window.exportCSV = () => {
-    let csv = "ID,Date,Shop,Customer,Phone,Address,Rider,Total,Status,Payment\n";
-    orders.forEach(o => {
-        csv += `"${o.id}","${new Date(o.timestamp).toLocaleDateString('en-IN')}","${o.shopId}","${o.customer?.name || ''}","${o.customer?.phone || ''}","${o.customer?.addr || ''}","${o.riderName || ''}","${o.total}","${o.status}","${o.paymentMethod}"\n`;
-    });
-    let blob = new Blob([csv], { type: 'text/csv' });
-    let url = URL.createObjectURL(blob);
-    let a = document.createElement('a');
-    a.href = url;
-    a.download = `vika_orders_${new Date().toLocaleDateString('en-IN').replace(/\//g, '-')}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+window.openAssign=(oid)=>{
+  document.getElementById('asOrderId').value=oid;
+  let online=riders.filter(r=>r.isOnline&&!r.isBlocked);
+  document.getElementById('onlineRiderList').innerHTML=online.length?online.map(r=>`
+    <button onclick="assignRider('${r.phone}','${r.name}')" class="w-full text-left bg-slate-50 p-3 rounded-xl border border-slate-100 hover:bg-orange-50 hover:border-orange-200 transition">
+      <p class="font-bold text-sm">${r.name}</p><p class="text-[10px] text-green-600 font-bold">● Online • ${r.vehicle||'Motorcycle'}</p>
+    </button>`).join(''):'<p class="text-center text-xs text-slate-400 py-4">No riders online</p>';
+  openModal('assignModal');
 };
+window.assignRider=async(phone,name)=>{
+  let oid=document.getElementById('asOrderId').value;
+  await updateDoc(doc(db,'orders',oid),{riderPhone:phone,riderName:name,status:'Rider Assigned'});
+  closeModal('assignModal');
+};
+
+window.updateOrderStatus=async(oid,status)=>{ if(!status) return; await updateDoc(doc(db,'orders',oid),{status}); };
+window.deleteOrder=async(oid)=>{ if(confirm('Delete order?')) await deleteDoc(doc(db,'orders',oid)); };
+
+window.createShop=async()=>{
+  let name=document.getElementById('nsName').value.trim();
+  let phone=document.getElementById('nsPhone').value.trim();
+  let pass=document.getElementById('nsPass').value.trim();
+  if(!name||!phone||!pass) return alert('Fill all required fields');
+  await addDoc(collection(db,'shops'),{shopName:name,phone,pass,location:document.getElementById('nsLoc').value.trim(),emoji:document.getElementById('nsEmoji').value.trim()||'🏪',isOpen:false,commissionRate:parseInt(document.getElementById('nsComm').value)||globalSettings.commissionRate||20,timestamp:Date.now()});
+  closeModal('addShopModal');alert('✅ Shop created!');
+};
+
+window.createRider=async()=>{
+  let n=document.getElementById('nrName').value.trim(),p=document.getElementById('nrPhone').value.trim(),ps=document.getElementById('nrPass').value.trim();
+  if(!n||!p||!ps) return alert('Fill all fields');
+  await addDoc(collection(db,'riders'),{name:n,phone:p,pass:ps,vehicle:document.getElementById('nrVeh').value,isOnline:false,isBlocked:false,timestamp:Date.now()});
+  closeModal('addRiderModal');alert('✅ Rider added!');
+};
+
+document.getElementById('saveSetBtn').onclick=async()=>{
+  await setDoc(doc(db,'settings','global'),{appName:document.getElementById('setAppName').value,upi:document.getElementById('setUpi').value,waNumber:document.getElementById('setWa').value,logoUrl:document.getElementById('setLogo').value},{merge:true});
+  alert('✅ Settings saved!');
+};
+
+document.getElementById('changePinBtn').onclick=async()=>{
+  let op=document.getElementById('oldPin').value,np=document.getElementById('newPin').value;
+  if(!op||!np||np.length<4) return alert('Enter valid PINs');
+  let snap=await getDoc(doc(db,'settings','security'));
+  let real=(snap.exists()&&snap.data().adminPin)?snap.data().adminPin:'1234';
+  if(op!==real) return alert('Wrong current PIN');
+  await setDoc(doc(db,'settings','security'),{adminPin:np},{merge:true});
+  alert('✅ PIN changed!');
+  document.getElementById('oldPin').value='';document.getElementById('newPin').value='';
+};
+
+window.clearAllData=async()=>{
+  let conf=prompt('⚠️ TYPE "CLEAR ALL" to delete ALL data (orders, riders, shops, products). This CANNOT be undone.');
+  if(conf!=='CLEAR ALL') return;
+  let conf2=confirm('FINAL WARNING: All data will be permanently deleted. Continue?');
+  if(!conf2) return;
+  let cols=['orders','riders','shops','products','offers','shop_requests','rider_requests'];
+  for(let col of cols){
+    let snap=await getDocs(collection(db,col));
+    let batch=writeBatch(db);
+    snap.docs.forEach(d=>batch.delete(d.ref));
+    await batch.commit();
+  }
+  alert('✅ All data cleared!');
+};
+
+window.exportCSV=()=>{
+  let csv='ID,Date,Shop,Customer,Phone,Address,Rider,Total,DeliveryFee,Status,Payment,UTR,UPIVerified\n';
+  orders.forEach(o=>{
+    csv+=`"${o.id}","${new Date(o.timestamp).toLocaleDateString('en-IN')}","${o.shopId}","${o.customer?.name||''}","${o.customer?.phone||''}","${(o.customer?.addr||'').replace(/"/g,"'")}","${o.riderName||''}","${o.total}","${o.deliveryFee||''}","${o.status}","${o.paymentMethod}","${o.utr||''}","${o.upiVerified||false}"\n`;
+  });
+  let blob=new Blob([csv],{type:'text/csv'});
+  let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`vika_orders_${Date.now()}.csv`;a.click();
+};
+
+// ===================== UI UTILS =====================
+window.view=(v)=>{
+  ['dash','req','shops','riders','ord','upi','commission','delivery','set'].forEach(t=>{
+    document.getElementById('view-'+t)?.classList.add('hidden');
+    document.getElementById('nav-'+t)?.classList.remove('active');
+  });
+  document.getElementById('view-'+v)?.classList.remove('hidden');
+  document.getElementById('nav-'+v)?.classList.add('active');
+  document.getElementById('mobileTitle').innerText=document.getElementById('nav-'+v)?.innerText?.trim()||'';
+  if(window.innerWidth<768) document.getElementById('sidebarPanel')?.classList.remove('open');
+};
+
+window.filterOrd=(s)=>{
+  currentOrdFilter=s;
+  document.querySelectorAll('#view-ord .tab-pill').forEach(b=>b.classList.remove('active','bg-slate-900','text-white'));
+  event?.target?.classList.add('active','bg-slate-900','text-white');
+  renderOrdersFiltered();
+};
+
+window.openModal=(id)=>document.getElementById(id)?.classList.remove('hidden');
+window.closeModal=(id)=>document.getElementById(db,id)?.classList.add('hidden');
+function openModal(id){document.getElementById(id)?.classList.remove('hidden');}
+function closeModal(id){document.getElementById(id)?.classList.add('hidden');}
+
+// Close modals on backdrop click
+document.querySelectorAll('.modal-backdrop,[id$="Modal"]').forEach(el=>{
+  el.addEventListener('click',e=>{if(e.target===el) el.classList.add('hidden');});
+});
 </script>
 </body>
 </html>
