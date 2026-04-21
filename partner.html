@@ -39,7 +39,6 @@
 
 <audio id="orderSound" src="https://assets.mixkit.co/active_storage/sfx/933/933-preview.mp3" preload="auto"></audio>
 
-<!-- PWA Install -->
 <div id="installBox" class="hidden fixed top-3 left-3 right-3 bg-slate-900 text-white p-4 rounded-2xl shadow-2xl z-[100] flex justify-between items-center slide-up">
     <div class="flex items-center gap-3">
         <div class="w-10 h-10 bg-orange-600 rounded-xl flex items-center justify-center"><i class="fas fa-download text-white"></i></div>
@@ -51,7 +50,6 @@
     </div>
 </div>
 
-<!-- LOGIN -->
 <div id="login" class="fixed inset-0 bg-slate-50 z-50 flex items-center justify-center p-6">
     <div class="w-full max-w-sm text-center">
         <div class="w-24 h-24 bg-gradient-to-br from-orange-500 to-red-600 rounded-[2rem] flex items-center justify-center mx-auto mb-6 text-white text-4xl font-black shadow-2xl border-4 border-white">P</div>
@@ -68,7 +66,6 @@
     </div>
 </div>
 
-<!-- REGISTER -->
 <div id="register" class="fixed inset-0 bg-white z-50 flex items-center justify-center p-6 hidden">
     <div class="w-full max-w-sm h-full overflow-y-auto pt-4 pb-10">
         <button onclick="showLogin()" class="mb-4 text-slate-400 font-bold text-xs flex items-center gap-1 hover:text-slate-800 tap">
@@ -104,10 +101,8 @@
     </div>
 </div>
 
-<!-- DASHBOARD -->
 <div id="dash" class="hidden min-h-screen">
 
-    <!-- Header -->
     <header class="fixed top-0 w-full bg-white/95 backdrop-blur-md z-40 px-4 py-3.5 flex justify-between items-center border-b border-slate-100 shadow-sm">
         <div>
             <h1 class="font-black text-lg leading-none text-slate-800 tracking-tight" id="sName">Shop</h1>
@@ -132,12 +127,11 @@
 
     <div class="pt-20 px-4 pb-24 max-w-2xl mx-auto">
 
-        <!-- Stats -->
         <div class="grid grid-cols-2 gap-3 mb-5">
             <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
                 <div class="flex items-center gap-2 mb-2"><div class="w-7 h-7 bg-green-100 rounded-lg flex items-center justify-center"><i class="fas fa-indian-rupee-sign text-green-500 text-xs"></i></div></div>
-                <p class="text-[9px] text-slate-400 font-black uppercase tracking-widest">Today's Sales</p>
-                <h2 class="text-2xl font-black text-slate-800">₹<span id="shopSales">0</span></h2>
+                <p class="text-[9px] text-slate-400 font-black uppercase tracking-widest">Real Earnings <br><span class="text-[8px] font-bold text-slate-300">(Post Commission)</span></p>
+                <h2 class="text-2xl font-black text-green-600">₹<span id="shopSales">0</span></h2>
             </div>
             <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
                 <div class="flex items-center gap-2 mb-2"><div class="w-7 h-7 bg-orange-100 rounded-lg flex items-center justify-center"><i class="fas fa-receipt text-orange-500 text-xs"></i></div></div>
@@ -146,7 +140,6 @@
             </div>
         </div>
 
-        <!-- Tabs -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-100 mb-5 overflow-hidden">
             <div class="flex border-b border-slate-100">
                 <button onclick="switchTab('orders')" id="tab-orders" class="flex-1 py-3 text-xs font-bold transition-all tab-active">Live Orders</button>
@@ -155,13 +148,11 @@
             </div>
         </div>
 
-        <!-- Views -->
         <div id="view-orders" class="space-y-4">
             <div id="ordersList"></div>
         </div>
 
         <div id="view-menu" class="hidden space-y-5">
-            <!-- Add Item Form -->
             <div class="bg-white p-5 rounded-[2rem] shadow-sm border border-slate-100">
                 <h3 class="font-black text-sm mb-4 flex items-center gap-2"><i class="fas fa-plus-circle text-orange-500"></i> Add New Item</h3>
                 <div class="space-y-3">
@@ -189,7 +180,6 @@
                 </div>
             </div>
 
-            <!-- Menu List -->
             <div>
                 <h3 class="font-black text-xs mb-3 ml-2 text-slate-400 uppercase tracking-widest">Your Inventory (<span id="menuCount">0</span> items)</h3>
                 <div id="menuList" class="space-y-3"></div>
@@ -202,7 +192,6 @@
     </div>
 </div>
 
-<!-- EDIT MODAL -->
 <div id="editModal" class="fixed inset-0 bg-slate-950/80 z-[100] hidden flex items-center justify-center p-5 backdrop-blur-sm">
     <div class="bg-white w-full max-w-sm rounded-[2rem] p-6 slide-up shadow-2xl">
         <h3 class="font-black text-xl mb-5">✏️ Edit Item</h3>
@@ -244,6 +233,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 let me = null, products = [], audioAllowed = false;
+let commRate = 0;
 
 // Audio unlock
 document.body.addEventListener('click', () => {
@@ -261,6 +251,17 @@ let deferredPrompt;
 window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredPrompt = e; document.getElementById('installBox').classList.remove('hidden'); });
 document.getElementById('installBtn').onclick = () => { if (deferredPrompt) deferredPrompt.prompt(); };
 
+window.onload = () => {
+    // Fetch Global Settings for Commission
+    onSnapshot(doc(db, "settings", "global"), s => {
+        if(s.exists()) {
+            commRate = parseFloat(s.data().comm) || 0;
+            // if orders already loaded, recalculate stats
+            if(window.latestOrders) updateStats(window.latestOrders);
+        }
+    });
+};
+
 // --- AUTH ---
 document.getElementById('loginBtn').onclick = async () => {
     let p = document.getElementById('lPhone').value.trim();
@@ -277,6 +278,15 @@ document.getElementById('loginBtn').onclick = async () => {
 
         if (!snap.empty) {
             me = { id: snap.docs[0].id, ...snap.docs[0].data() };
+            
+            // Block Check Feature
+            if(me.isBlocked) {
+                alert("⛔ Your Shop account has been Blocked by Admin. Please contact support.");
+                btn.innerHTML = 'ACCESS DASHBOARD';
+                btn.disabled = false;
+                return;
+            }
+
             document.getElementById('login').classList.add('hidden');
             document.getElementById('dash').classList.remove('hidden');
             document.getElementById('sName').innerText = me.shopName;
@@ -299,6 +309,8 @@ function initDashboard() {
     const q = query(collection(db, "orders"), where("shopId", "==", me.id));
     onSnapshot(q, snap => {
         let orders = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => b.timestamp - a.timestamp);
+        window.latestOrders = orders; // Save for commission recalculation
+        
         let active = orders.filter(o => ['Pending', 'Preparing', 'Ready for Pickup'].includes(o.status));
         let history = orders.filter(o => ['Delivered', 'Cancelled', 'Out for Delivery', 'Rider Assigned'].includes(o.status));
 
@@ -430,11 +442,22 @@ function renderHistory(orders) {
         </div>`).join('');
 }
 
-// --- STATS ---
+// --- STATS (WITH REAL EARNINGS) ---
 function updateStats(orders) {
     let delivered = orders.filter(o => o.status === 'Delivered');
-    document.getElementById('shopSales').innerText = delivered.reduce((a, b) => a + (parseInt(b.total) || 0), 0);
-    document.getElementById('orderCount').innerText = orders.length;
+    
+    // Subtotal: Raw items cost (Order Total minus Delivery Fee)
+    let rawTotal = delivered.reduce((a, b) => {
+        let fee = parseInt(b.deliveryFee) || 20;
+        let itemsTotal = parseInt(b.total) - fee;
+        return a + (itemsTotal > 0 ? itemsTotal : 0);
+    }, 0);
+    
+    // Post Commission Earnings
+    let realEarnings = rawTotal - (rawTotal * (commRate / 100));
+    
+    document.getElementById('shopSales').innerText = Math.floor(realEarnings);
+    document.getElementById('orderCount').innerText = delivered.length;
 }
 
 // --- IMAGE COMPRESSION ---
